@@ -1,0 +1,10 @@
+{
+    "presets":[
+        "next/babel",  //리액트 오류 해결
+    ],
+    "plugins": [
+        ["@babel/plugin-proposal-decorators",{"legacy":true}],
+        ["@babel/plugin-proposal-class-properties",{"loose":true}],
+        [ "@babel/plugin-transform-runtime" ] // mobx 디펜던시
+    ] 
+}
