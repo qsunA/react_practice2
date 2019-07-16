@@ -3,9 +3,9 @@ import AppLayout from "../components/AppLayout";
 import PropTypes from 'prop-types';
 import Head from "next/head";
 import { Provider } from 'mobx-react';
-import PostStore from '../stores/PostStore';
+import RootStore from '../stores/RootStore';
 
-const store = new PostStore();
+const store = new RootStore();
 
 const NodeBird = ({Component})=>{
     return(

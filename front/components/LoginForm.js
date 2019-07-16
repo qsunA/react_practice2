@@ -2,15 +2,14 @@ import React,{useCallback} from 'react';
 import {useInput} from '../pages/signup';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
+import { inject, observer } from 'mobx-react';
 
-const LoginForm=() =>{
+const LoginForm=(loginStore) =>{
+    console.log(loginStore);
     const [id,onChangeId] = useInput('');
     const [password,onChangePassword] = useInput('');
     const onSubmitForm = useCallback((e) =>{
         e.preventDefault();
-        console.log({
-            id, password
-        })
     },[id,password]);// 자식 컴포넌트에 넘긴다면 useCallback으로 넘겨준다
     
     return(
@@ -33,4 +32,6 @@ const LoginForm=() =>{
     );
 }
 
-export default LoginForm;
+export default inject(({store}) =>({
+    loginStore: store.loginStore
+}))(observer(LoginForm));

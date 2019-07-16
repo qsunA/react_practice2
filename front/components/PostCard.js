@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Card, Icon, Avatar } from 'antd';
 import PropTypes from 'prop-types';
+import { inject, observer } from 'mobx-react';
 
 const PostCard = ({post})=>{
     console.log(post);
@@ -34,4 +35,6 @@ PostCard.propTypes = {
     })
 }
 
-export default PostCard;
+export default inject(({store})=>({
+    post : store.postStore
+})) (observer(PostCard));
