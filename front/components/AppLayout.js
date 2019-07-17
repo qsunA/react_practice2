@@ -4,16 +4,10 @@ import Link from 'next/link';
 import PropTypes from 'prop-types';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
+import { observer, inject } from 'mobx-react';
 
-const dummy = {
-   nickname:'ruby',
-   Post :[],
-   Followings:[],
-   Follwers:[],
-   isLoggedIn: false
-}
-
-const AppLayout = ({children})=>{
+const AppLayout = ({children,user})=>{
+    const {isLoggedIn} = user;
     return(
         <div>
             <Menu mode="horizontal">
@@ -25,7 +19,7 @@ const AppLayout = ({children})=>{
             </Menu>
             <Row  gutter={8}>
                 <Col xs={24} md={6}>
-                    {dummy.isLoggedIn?
+                    {isLoggedIn?
                         <UserProfile/> :
                         <LoginForm/>
                     }
@@ -42,4 +36,6 @@ AppLayout.propTypes = {
     children : PropTypes.node
 }
 
-export default AppLayout;
+export default inject(({store})=>({
+    user:store.userStore
+}))(observer(AppLayout));

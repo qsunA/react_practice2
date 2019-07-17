@@ -1,9 +1,9 @@
-import LoginStore from "./LoginStore";
+import UserStore from "./UserStore";
 import PostStore from "./PostStore";
 
 class RootStore{
     constructor(){
-        this.loginStore = new LoginStore(this);
+        this.userStore = new UserStore(this);
         this.postStore = new PostStore(this);
     }
 }

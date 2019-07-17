@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, Avatar } from 'antd';
 
 const dummy = {
     nickname:'ruby',

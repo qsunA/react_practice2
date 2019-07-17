@@ -1,7 +1,7 @@
 import { observable, action } from "mobx";
 
 
-export default class LoginStore{
+export default class UserStore{
     @observable isLoggedIn =false;
     @observable user = {
         userId:'',
@@ -14,10 +14,11 @@ export default class LoginStore{
 
     @action login(){
         this.isLoggedIn = true;
+        this.user.userId = 'test';
         console.log(`this.isLoggedIn 상태 : ${this.isLoggedIn}`);
     }
 
     @action logout(){
-
+        this.isLoggedIn = false;
     }
 }

@@ -1,29 +1,19 @@
 import React from 'react';
-import { Form, Input, Button, Card, Icon, Avatar } from 'antd';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
 import { inject, observer } from 'mobx-react';
 
-const dummy = {
-  isLoggedIn : true,
-  imagePath:[],
-  mainPosts:[{
-    User:{
-      id:1,
-      nickname:'루비',      
-    },
-    content:'첫번째 게시글',
-    img: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
-  }]
-}
-
-const Home = ({post}) => {
+const Home = ({post,userStore}) => {
+  const {postList} = post;
+  const {isLoggedIn,user} = userStore;
+  console.log(`user.isLoggedIn 상태 변화 감지 가능? ${isLoggedIn}`);
   return (
     <div>
-      {dummy.isLoggedIn&&<PostForm/>}
-      {dummy.mainPosts.map((c)=>{
+      {user.userId!==""?<div>로그인 했습니다. </div>:<div>로그아웃했습니다.</div>}
+      {isLoggedIn&&<PostForm/>}
+      {postList.map((val,idx)=>{
         return(
-          <PostCard key={c} post={post} />
+          <PostCard key={idx} post={val} />
         )
       })}
     </div>
@@ -31,5 +21,6 @@ const Home = ({post}) => {
 };
 
 export default inject(({store})=>({
-  post: store
+  post: store.postStore,
+  userStore : store.userStore
 }))(observer(Home));

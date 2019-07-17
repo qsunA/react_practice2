@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 
 const PostCard = ({post})=>{
-    console.log(post);
     return(
         <Card
             key={+post.createAt}
@@ -18,10 +17,10 @@ const PostCard = ({post})=>{
             extra={<Button>팔로우</Button>}
         >
             <Card.Meta
-            avatar={<Avatar>{post.user.nickname[0]}</Avatar>}
-            title={post.user.nickname}
+            avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
+            title={post.User.nickname}
             description={post.content}
-            />
+            /> 
       </Card>
     )
 }
@@ -35,6 +34,4 @@ PostCard.propTypes = {
     })
 }
 
-export default inject(({store})=>({
-    post : store.postStore
-})) (observer(PostCard));
+export default PostCard;

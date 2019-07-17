@@ -4,12 +4,14 @@ import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
 import { inject, observer } from 'mobx-react';
 
-const LoginForm=(loginStore) =>{
-    console.log(loginStore);
+const LoginForm=({userStore}) =>{
+    const {isLoggedIn,user} = userStore;
+    console.log(isLoggedIn);
     const [id,onChangeId] = useInput('');
     const [password,onChangePassword] = useInput('');
     const onSubmitForm = useCallback((e) =>{
         e.preventDefault();
+        userStore.login();
     },[id,password]);// 자식 컴포넌트에 넘긴다면 useCallback으로 넘겨준다
     
     return(
@@ -33,5 +35,5 @@ const LoginForm=(loginStore) =>{
 }
 
 export default inject(({store}) =>({
-    loginStore: store.loginStore
+    userStore: store.userStore
 }))(observer(LoginForm));
