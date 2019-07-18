@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Form, Input, Checkbox, Button } from 'antd';
+import { inject, observer } from 'mobx-react';
 
 export const useInput = (initValue = null) =>{
     const [value, setter] = useState(initValue);
@@ -11,7 +12,7 @@ export const useInput = (initValue = null) =>{
     return [value, handler];
 }
 
-const  Signup= () =>{
+const  Signup= ({userStore}) =>{
     const [id,setId] = useState('');
     const [nick,setNick] = useState('');
     const [password,setPassword] = useState('');
@@ -19,6 +20,7 @@ const  Signup= () =>{
     const [term,setTerm] = useState(false);
     const [passwordError, setPasswordError]= useState(false);
     const [termError, setTermError]= useState(false);
+    const {isSigningUp} = userStore;
 
     const onSubmit= useCallback((e)=>{
         e.preventDefault();
@@ -28,6 +30,12 @@ const  Signup= () =>{
         if(!term){
             return setTermError(true);
         }
+        const data = {
+            userId: id,
+            password:password,
+            nickname:nick
+        }
+        userStore.signUp(data);
         console.log({
             id,
             password,
@@ -35,7 +43,7 @@ const  Signup= () =>{
             nick,
             term
         });
-    },[password,passwordChk,term]);
+    },[id,nickname,password,passwordChk,term]);
     
     const onChangeId=(e)=>{
         setId(e.target.value);
@@ -88,11 +96,13 @@ const  Signup= () =>{
                     {termError && <div style={{color:'red'}}>약관에 동의하셔야합니다.</div>}
                 </div>
                 <div style={{marginTop:10}}>
-                    <Button type="primary" htmlType="submit">가입하기</Button>
+                    <Button type="primary" htmlType="submit" loading={isSigningUp}>가입하기</Button>
                 </div>
             </Form>
         </>  
     );     
 };
 
-export default Signup;
+export default inject(({store})=>({
+    userStore : store.userStore
+}))(observer(Signup));

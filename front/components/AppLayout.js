@@ -25,7 +25,7 @@ const AppLayout = ({children,user})=>{
                     }
                 </Col>
                 <Col xs={24} md={12}>{children}</Col>
-                <Col xs={24} md={6}>3</Col>
+                <Col xs={24} md={6}></Col>
             </Row>
             
         </div>

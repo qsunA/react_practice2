@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { inject, observer } from 'mobx-react';
 
 const LoginForm=({userStore}) =>{
-    const {isLoggedIn,user} = userStore;
+    const {isLoggedIn,user,isLoggingIn} = userStore;
     console.log(isLoggedIn);
     const [id,onChangeId] = useInput('');
     const [password,onChangePassword] = useInput('');
@@ -27,7 +27,7 @@ const LoginForm=({userStore}) =>{
                 <Input name="user-password" type="password" value={password} onChange={onChangePassword} required/>
             </div>
             <div style={{marginTop:'10px'}}>
-                <Button type="primary" htmlType="submit" loading={false}>로그인</Button>
+                <Button type="primary" htmlType="submit" loading={isLoggingIn}>로그인</Button>
                 <Link href="/signup"><Button>회원가입</Button></Link>
             </div>
         </Form>        

@@ -12,13 +12,13 @@ router.post('/', async (req, res, next) => { // POST /api/user 회원가입
     try{
         const exUser= await db.User.findOne({
             where : {
-                userId : req.body.id
+                userId : req.body.userId
             },
         });
         if(exUser){
             return res.status(403).send('이미 사용중인 아이디입니다.');
         }
-        const hashedPassword = await bcrypt.hash(req.body.password, 12);
+        const hashedPassword = await bcrypt.hash(req.body.password, 12); // 비밀번호 암호화
         const newUser = await db.User.create({
             nickname: req.body.nickname,
             userId : req.body.userId,
