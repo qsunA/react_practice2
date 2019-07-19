@@ -47,10 +47,10 @@ const PostCard = ({post,postStore, userStore})=>{
             title={post.User.nickname}
             description={(
                 <div>
-                    {post.content.split(/(#[^\s]+)/g).map((v)=>{
+                    {post.content.split(/(#[^\s]+)/g).map((v,idx)=>{
                         if(v.match(/#[^\s]+/)){
                             return(
-                                <Link href="/hashtag">
+                                <Link href="/hashtag" key={idx}>
                                     <a>{v}</a>
                                 </Link>
                             );

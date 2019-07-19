@@ -7,7 +7,7 @@ import RootStore from '../stores/RootStore';
 
 const store = new RootStore();
 
-const NodeBird = ({Component})=>{
+const NodeBird = ({Component, pageProps})=>{
     return(
         <>
             <Head>
@@ -16,15 +16,26 @@ const NodeBird = ({Component})=>{
             </Head>
             <Provider store={store}>
                 <AppLayout>
-                    <Component/>
+                    <Component {...pageProps}/>
                 </AppLayout>
             </Provider>
         </>
     )
 }
 
+NodeBird.getInitialProps = async(context)=>{
+    console.log(context);
+    const {ctx,Component} = context;
+    let pageProps = {};
+    if(Component.getInitialProps){
+        pageProps = await Component.getInitialProps(ctx);
+    }
+    return {pageProps};
+}
+
 NodeBird.propTypes ={
-    Component : PropTypes.elementType// jsx 에 들어갈 수 있는 모든 것을 node라고 한다. 
+    Component : PropTypes.elementType.isRequired,// jsx 에 들어갈 수 있는 모든 것을 node라고 한다. 
+    store: PropTypes.object.isRequired
 }
 
 export default NodeBird;
