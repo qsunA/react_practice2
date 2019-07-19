@@ -4,14 +4,21 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "next -p 3001",
+    "dev": "nodemon",
     "build": "next build",
     "start": "next start"
   },
   "dependencies": {
     "antd": "^3.20.1",
+    "axios": "^0.19.0",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
     "mobx": "^5.11.0",
     "mobx-react": "^6.1.1",
+    "mobx-react-lite": "^1.4.1",
+    "morgan": "^1.9.1",
     "next": "^9.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
@@ -24,6 +31,7 @@
     "babel-eslint": "^10.0.2",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react-hooks": "^1.6.1",
     "nodemon": "^1.19.1",
     "webpack": "^4.35.3"
   }

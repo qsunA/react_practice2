@@ -1,23 +1,22 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Form, Input, Button } from 'antd';
 
-const dummy = {
-    isLoggedIn : true,
-    imagePath:[],
-    mainPosts:[{
-      User:{
-        id:1,
-        nickname:'루비',      
-      },
-      content:'첫번째 게시글',
-      img: '',
-    }]
-  }
-
 const PostForm =()=>{
+  const [text,setText] = useState('');
+  const onSubmitForm = useCallback((e)=>{
+    e.preventDefault();
+    if(!text||!text.trim()){
+      return alert('게시글을 작성하세요.')
+    }
+  },[text]);
+
+  const onChangeText = useCallback((e) => {
+      setText(e.target.value);
+    },[]);
+
     return(
-        <Form style={{margin:'10px 0 20px 0'}} encType="multipart/form-data">
-            <Input.TextArea maxLength={140} placeholder="어떤 신기한 일이 생겼나요?"/>
+        <Form style={{margin:'10px 0 20px 0'}} encType="multipart/form-data" onSubmit={onSubmitForm}>
+            <Input.TextArea maxLength={140} placeholder="어떤 신기한 일이 생겼나요?" value={text} onChange={onChangeText}/>
             <div>
             <input type="file" multiple hidden/>
             <Button>이미지 업로드</Button>

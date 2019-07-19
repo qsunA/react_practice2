@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import {Button, Card, Icon, Avatar, Form, Input, List, Comment } from 'antd';
+import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 
@@ -44,7 +45,20 @@ const PostCard = ({post,postStore, userStore})=>{
             <Card.Meta
             avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
             title={post.User.nickname}
-            description={post.content}
+            description={(
+                <div>
+                    {post.content.split(/(#[^\s]+)/g).map((v)=>{
+                        if(v.match(/#[^\s]+/)){
+                            return(
+                                <Link href="/hashtag">
+                                    <a>{v}</a>
+                                </Link>
+                            );
+                        }
+                        return v;
+                    })}
+                </div>
+                )}
             /> 
       </Card>
       {

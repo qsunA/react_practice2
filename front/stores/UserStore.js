@@ -60,4 +60,8 @@ export default class UserStore{
             this.signUpErrorReason = e;
         }        
     }
+
+    @action loadUser(user){
+        
+    }
 }

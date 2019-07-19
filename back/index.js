@@ -4,19 +4,26 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const dotenv = require('dotenv');
+const passport = require('passport');
 
+const passportConfig = require('./passport');
 const db = require('./models');
 const userAPIRouter = require('./routes/user');
 const postAPIRouter = require('./routes/post');
 const postsAPIRouter = require('./routes/posts');
 
+dotenv.config();
 const app = express();
 db.sequelize.sync();
+passportConfig();
 
 app.use(morgan('dev'));
 app.use(express.json()); // json형식의 본문
 app.use(express.urlencoded({extended:true})); // form으로 나온 것을 처리 
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials : true // 프론트와 서버 간의 쿠키 보냄 
+}));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(expressSession({
     resave:false,
@@ -25,8 +32,11 @@ app.use(expressSession({
     cookie:{
         httpOnly:true,
         secure:false, //https를 쓸 때 true
-    }
+    },
+    name:'qrnbck'
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // API는 다른 서비스가 내 서비스의 기능을 실행할 수 있게 열어둔 창구
 app.use('/api/user', userAPIRouter);

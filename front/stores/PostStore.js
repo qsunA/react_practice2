@@ -20,11 +20,11 @@ export default class PostStore{
         this.postList.clear();
         this.postList = [
             {img:"https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
-            content:"첫번째 게시글",
+            content:"첫번째 게시글 #안녕",
             Comments : [], id:1,
             User : {id:1, nickname:'귤귤'}},
             {img:"https://i.pinimg.com/originals/b5/32/8b/b5328badff604de88cd397df700d1c3a.jpg",
-            content:"두번째 게시글",
+            content:"두번째 게시글 #tag #좋아요",
             Comments : [], id:2,
             User : {id:2, nickname:'Ruby'}}
         ];
@@ -54,5 +54,8 @@ export default class PostStore{
 
     }
 
+    @action loadMainPosts(){
+
+    }
 
 }

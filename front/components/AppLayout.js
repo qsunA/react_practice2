@@ -8,6 +8,8 @@ import { observer, inject } from 'mobx-react';
 
 const AppLayout = ({children,user})=>{
     const {isLoggedIn} = user;
+
+    // 전체적으로 내 정보가 있는지 확인하고 없으면 내 정보를 불러오는 로직을 작성 해줘야한다. 
     return(
         <div>
             <Menu mode="horizontal">
