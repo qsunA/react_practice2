@@ -11,7 +11,11 @@ const LoginForm=({userStore}) =>{
     const [password,onChangePassword] = useInput('');
     const onSubmitForm = useCallback((e) =>{
         e.preventDefault();
-        userStore.login();
+        const user = {
+            userId: id,
+            password : password
+        }
+        userStore.login(user);
     },[id,password]);// 자식 컴포넌트에 넘긴다면 useCallback으로 넘겨준다
     
     return(

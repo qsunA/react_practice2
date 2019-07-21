@@ -1,12 +1,11 @@
 import { observable, action } from "mobx";
+import axios from 'axios';
 
+axios.defaults.baseURL = 'http://localhost:3065/api';
 
 export default class UserStore{
     @observable isLoggedIn =false; // 로그인 여부
-    @observable user = {
-        userId:'',
-        password:''
-    };
+    @observable user = null;
     @observable isLoggingOut = false;  // 로그아웃 시도중
     @observable isLoggingIn = false; // 로그인 시도중 
     @observable logInErrorReason = ''// 로그인 실패사유
@@ -21,20 +20,22 @@ export default class UserStore{
         this.root = root;
     }
 
-    @action login(){ 
+    @action login(user){ 
         try{
             this.isLoggingIn = true;
-            this.user.userId = 'test';
             console.log(`this.isLoggedIn 상태 : ${this.isLoggedIn}`);
             var me = this;
-            setTimeout(()=>{
-                console.log(`setTimeOut 3000`);
+            axios.post('/user/login', user,{
+                withCredentials:true
+            }).then(res=>{
+                console.log(`응답받음 : ${res.userId}`);
                 me.isLoggingIn =false;
                 me.isLoggedIn = true;
-            },3000);
+                me.user = res.data;
+            });
         }catch(e){
             console.error(e);
-            logInErrorReason = e;
+            //this.logInErrorReason = e;
         }           
     }
 
@@ -49,12 +50,23 @@ export default class UserStore{
     @action signUp(user){
         try{
             this.isSigningUp = true;
-            console.log(`signup :${user.id}`);
+
             var me = this;
-            setTimeout(()=>{
+            axios.post('/user/',{
+                nickname: user.nickname,
+                userId : user.userId,
+                hashedPassword : user.password, // 비밀번호가 post에서 바로 노출되기 때문에 노출되지 않는 방법 확인 
+            }).then(res=>{
                 me.isSignedUp = true;
                 me.isSigningUp = false;
-            },3000);
+                // 그 다음 액션에 관한게 없어서 그 후 액션 어떻게 되는지 구현 
+            }).catch((err)=>console.error(err));
+
+            // var me = this;
+            // setTimeout(()=>{
+            //     me.isSignedUp = true;
+            //     me.isSigningUp = false;
+            // },3000);
         }catch(e){
             console.error(e);
             this.signUpErrorReason = e;

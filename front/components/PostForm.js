@@ -23,7 +23,7 @@ const PostForm =()=>{
             <Button type="primary" style={{float: "right"}} htmlType="submit">짹짹</Button>
             </div>
             <div>
-            {dummy.imagePath.map((v,i)=>{
+            {/* {dummy.imagePath.map((v,i)=>{
                 return(
                 <div key={i} style={{display:'inline-block'}}>
                     <img src={`http://localhost:3065${v}`} style={{width:'200px'}} alt={v}/>
@@ -32,7 +32,7 @@ const PostForm =()=>{
                     </div>
                 </div>
                 )
-            })}
+            })} */}
             </div>
       </Form>
     )

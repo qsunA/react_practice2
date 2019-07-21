@@ -43,7 +43,7 @@ const  Signup= ({userStore}) =>{
             nick,
             term
         });
-    },[id,nickname,password,passwordChk,term]);
+    },[id,nick,password,passwordChk,term]);
     
     const onChangeId=(e)=>{
         setId(e.target.value);

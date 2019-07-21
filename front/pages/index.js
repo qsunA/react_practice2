@@ -9,7 +9,7 @@ const Home = ({post,userStore}) => {
   console.log(`user.isLoggedIn 상태 변화 감지 가능? ${isLoggedIn}`);
   return (
     <div>
-      {user.userId!==""?<div>로그인 했습니다. </div>:<div>로그아웃했습니다.</div>}
+      {user?<div>로그인 했습니다. </div>:<div>로그아웃했습니다.</div>}
       {isLoggedIn&&<PostForm/>}
       {postList.map((val,idx)=>{
         return(
