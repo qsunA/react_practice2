@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Menu, Input, Button, Row, Col, Card, Avatar} from 'antd';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
@@ -6,10 +6,16 @@ import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import { observer, inject } from 'mobx-react';
 
-const AppLayout = ({children,user})=>{
-    const {isLoggedIn} = user;
+const AppLayout = ({children,userStore})=>{
+    const {isLoggedIn,user} = userStore;
 
     // 전체적으로 내 정보가 있는지 확인하고 없으면 내 정보를 불러오는 로직을 작성 해줘야한다. 
+
+    useEffect(()=>{
+        if(!user){
+            userStore.loadUser();
+        }
+    },[]);
     return(
         <div>
             <Menu mode="horizontal">
@@ -21,7 +27,7 @@ const AppLayout = ({children,user})=>{
             </Menu>
             <Row  gutter={8}>
                 <Col xs={24} md={6}>
-                    {isLoggedIn?
+                    {user?
                         <UserProfile/> :
                         <LoginForm/>
                     }
@@ -39,5 +45,5 @@ AppLayout.propTypes = {
 }
 
 export default inject(({store})=>({
-    user:store.userStore
+    userStore:store.userStore
 }))(observer(AppLayout));

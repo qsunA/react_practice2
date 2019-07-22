@@ -1,33 +1,33 @@
-import React, { useContext } from 'react';
-import { Card, Avatar } from 'antd';
+import React, { useContext, useCallback } from 'react';
+import { Card, Avatar, Button } from 'antd';
 import RootStore from '../stores/RootStore';
 import { inject, observer } from 'mobx-react';
 
-const dummy = {
-    nickname:'ruby',
-    Post :[],
-    Followings:[],
-    Follwers:[],
-    isLoggedIn: false
- }
-
 const UserProfile = ({userStore})=>{
 
-    console.log(` store 확인 : ${userStore}`);
-    const me = userStore.user;
+    const {user} = userStore;
+
+    const onLogout = useCallback(()=>{
+        userStore.logout();
+    },[]);
+
     return(
-        <Card
+        <div>
+            {user&& <Card
             actions={[
-                <div key="twit">짹짹<br/>{me.Post.length}</div>,
-                <div key="following">팔로잉<br/>{me.Followings.length}</div>,
-                <div key="follower">짹짹<br/>{me.Follwers.length}</div>,
+                <div key="twit">짹짹<br/>{user.Posts.length}</div>,
+                <div key="following">팔로잉<br/>{user.Followings.length}</div>,
+                <div key="follower">짹짹<br/>{user.Followers.length}</div>,
             ]}
         >
             <Card.Meta
-                avatar={<Avatar>{me.nickname[0]}</Avatar>}
-                title={me.nickname}
+                avatar={<Avatar>{user.nickname[0]}</Avatar>}
+                title={user.nickname}
             />
-        </Card>
+            <Button onClick={onLogout}>로그아웃</Button>
+        </Card>}
+        </div>
+        
     );
 }
 

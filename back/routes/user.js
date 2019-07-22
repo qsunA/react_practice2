@@ -7,9 +7,10 @@ const router = express.Router();
 
 router.get('/', (req, res) => { // /api/user/ 
     //loadUser
-    if(req.user){
+    if(!req.user){
         return res.status(401).send('로그인이 필요합니다. ');
     }
+    console.log(`loadUser : req.user확인 - ${req.user}`)
     const user = Object.assign({},req.user.toJSON());
     delete user.password;
     return res.json(req.user);

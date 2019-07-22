@@ -1,4 +1,5 @@
 import {observable, computed, action} from 'mobx';
+import axios from 'axios';
 
 export default class PostStore{
     @observable postList = [];
@@ -31,7 +32,11 @@ export default class PostStore{
     }
 
     @action createPost(post){
-
+        axios.post('/post',{
+            content:post
+        },{
+            withCredentials:true
+        })
     }
 
     @action updatePost(post){
@@ -55,7 +60,11 @@ export default class PostStore{
     }
 
     @action loadMainPosts(){
-
+        console.log(`postLoad확인1`);
+        var me = this;
+        axios.get('/posts').then(res=>{
+            me.postList = res.data;
+        }); 
     }
 
 }

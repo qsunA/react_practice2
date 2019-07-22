@@ -1,13 +1,16 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useContext } from 'react';
 import { Form, Input, Button } from 'antd';
+import RootStore from '../stores/RootStore';
+import { inject, observer } from 'mobx-react';
 
-const PostForm =()=>{
+const PostForm =({postStore})=>{
   const [text,setText] = useState('');
   const onSubmitForm = useCallback((e)=>{
     e.preventDefault();
     if(!text||!text.trim()){
       return alert('게시글을 작성하세요.')
     }
+    postStore.createPost(text.trim());
   },[text]);
 
   const onChangeText = useCallback((e) => {
@@ -38,4 +41,6 @@ const PostForm =()=>{
     )
 }
 
-export default PostForm;
+export default inject(({store})=>({
+  postStore : store.postStore
+}))(observer(PostForm));

@@ -32,6 +32,7 @@ export default class UserStore{
                 me.isLoggingIn =false;
                 me.isLoggedIn = true;
                 me.user = res.data;
+                console.log(`로그인 : ${me.user}`);
             });
         }catch(e){
             console.error(e);
@@ -41,7 +42,13 @@ export default class UserStore{
 
     @action logout(){
         try{
-            this.isLoggedIn = false;
+            var me = this;
+            me.isLoggedIn = false;
+            axios.post('/user/logout/',{},{ //axios 에서 post로 보낼때 두번째 인자는 데이터가 온다. 
+                withCredentials:true 
+            }).then(res=>{
+                me.user = null;
+            });
         }catch(e){
             console.error(e);
         }        
@@ -60,7 +67,7 @@ export default class UserStore{
                 me.isSignedUp = true;
                 me.isSigningUp = false;
                 // 그 다음 액션에 관한게 없어서 그 후 액션 어떻게 되는지 구현 
-            }).catch((err)=>console.error(err));
+            });
 
             // var me = this;
             // setTimeout(()=>{
@@ -73,7 +80,17 @@ export default class UserStore{
         }        
     }
 
-    @action loadUser(user){
-        
+    @action loadUser(){
+        try{
+            console.log(`loadUser:확인 `)
+            var me = this;
+            axios.get('/user/',{
+                withCredentials:true,
+            }).then(res=>{
+                me.user = res.data;
+            });
+        }catch(e){
+            console.error(e);
+        }
     }
 }

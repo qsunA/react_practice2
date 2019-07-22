@@ -43,8 +43,8 @@ const PostCard = ({post,postStore, userStore})=>{
             extra={<Button>팔로우</Button>}
         >
             <Card.Meta
-            avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
-            title={post.User.nickname}
+            // avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
+            // title={post.User.nickname}
             description={(
                 <div>
                     {post.content.split(/(#[^\s]+)/g).map((v,idx)=>{
@@ -96,7 +96,7 @@ PostCard.propTypes = {
         user:PropTypes.object,
         content:PropTypes.string,
         img:PropTypes.string,
-        createdAt:PropTypes.object
+        createdAt:PropTypes.string
     })
 }
 

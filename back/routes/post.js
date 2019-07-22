@@ -11,6 +11,8 @@ router.post('/', async (req, res, next) => { // POST /api/post
             UserId : req.body.id
         });
 
+        console.log(`확인해보기 postcreate : ${req.body.id}`)
+
         if(hashtags){
             const result = await Promise.all(hashtags.map(tag=>db.Hashtag.findOrCreate({
                 where:{
