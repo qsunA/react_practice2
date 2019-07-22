@@ -8,7 +8,7 @@ router.post('/', async (req, res, next) => { // POST /api/post
         const hashtags = req.body.content.match(/#[^\s]+/g); // 정규표현식으로 해시태그 뽑아냄
         const newPost = await db.Post.create({
             content:req.body.content,
-            UserId : req.body.id
+            UserId : req.user.id
         });
 
         console.log(`확인해보기 postcreate : ${req.body.id}`)
