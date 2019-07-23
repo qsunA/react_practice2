@@ -32,11 +32,16 @@ export default class PostStore{
     }
 
     @action createPost(post){
-        axios.post('/post',{
-            content:post
-        },{
-            withCredentials:true
-        })
+        try{
+            axios.post('/post',{
+                content:post
+            },{
+                withCredentials:true
+            });
+        }catch(e){
+            console.error(e);
+        }
+        
     }
 
     @action updatePost(post){
@@ -60,11 +65,37 @@ export default class PostStore{
     }
 
     @action loadMainPosts(){
-        console.log(`postLoad확인1`);
-        var me = this;
-        axios.get('/posts').then(res=>{
-            me.postList = res.data;
-        }); 
+        try{
+            console.log(`postLoad확인1`);
+            var me = this;
+            axios.get('/posts').then(res=>{
+                me.postList = res.data;
+            }); 
+        }catch(e){
+            log.error(e);
+        }        
     }
 
+    @action loadUserPosts(id){
+        try{
+            var me = this;
+            axios.get(`/user/${id}/posts`).then(res=>{
+                me.postList = res.data;
+            });
+        }catch(e){
+            log.error(e);
+        }
+    }
+
+    @action loadHashtagMainPosts(tag){
+        try{
+            console.log(`loadHashtagMainPosts 확인1 ${tag}`);
+            var me = this;
+            axios.get(`/hashtag/${tag}`).then(res=>{
+                me.postList = res.data;
+            });
+        }catch(e){
+            log.error(e);
+        }
+    }
 }

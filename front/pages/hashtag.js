@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
 import PostCard from '../components/PostCard';
+import { useEffect } from 'react';
+import { inject, observer } from 'mobx-react';
 
-const Hashtag = ({tag})=>{
-    const mainPosts = [];
+const Hashtag = ({tag,postStore})=>{
+    const {postList} = postStore;
+    useEffect(()=>{        
+        postStore.loadHashtagMainPosts(tag);
+    },[]);
     return(
         <div>
-            {mainPosts.map(c=>(
-                <PostCard key={+c.createdAt} post={c}/>
+            {postList.map((c,idx)=>(
+                <PostCard key={idx} post={c}/>
             ))}
         </div>
     );
@@ -21,4 +26,6 @@ Hashtag.getInitialProps= async(context)=>{// ssr인 경우 getInitialProps에서
     return {tag:context.query.tag};
 };
 
-export default Hashtag;
+export default inject(({store})=>({
+    postStore : store.postStore
+})) (observer(Hashtag));

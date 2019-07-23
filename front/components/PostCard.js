@@ -43,14 +43,14 @@ const PostCard = ({post,postStore, userStore})=>{
             extra={<Button>팔로우</Button>}
         >
             <Card.Meta
-            // avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
-            // title={post.User.nickname}
+            avatar={<Link href={{pathname:'/user',query:{id:post.User.id}}} as={`/user/${post.User.id}`} ><a><Avatar>{post.User.nickname[0]}</Avatar></a></Link>}
+            title={post.User.nickname}
             description={(
                 <div>
                     {post.content.split(/(#[^\s]+)/g).map((v,idx)=>{
                         if(v.match(/#[^\s]+/)){
                             return(
-                                <Link href="/hashtag" key={idx}>
+                                <Link href={{pathname:'/hashtag',query:{tag:v.slice(1)}}} as={`/hashtag/${v.slice(1)}`} key={v}>
                                     <a>{v}</a>
                                 </Link>
                             );
@@ -78,7 +78,7 @@ const PostCard = ({post,postStore, userStore})=>{
                     <li>
                         <Comment
                             author = {item.User.nickname}
-                            avatar = {<Avatar>{item.User.nickname[0]}</Avatar>}
+                            avatar = {<Link href={{pathname:'/user',query:{tag:item.User.id}}} as={`/user/${item.User.id}`}><a><Avatar>{item.User.nickname[0]}</Avatar></a></Link>}
                             content = {item.content}
                         />
                     </li>

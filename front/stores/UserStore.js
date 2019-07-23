@@ -82,12 +82,26 @@ export default class UserStore{
 
     @action loadUser(){
         try{
-            console.log(`loadUser:확인 `)
             var me = this;
             axios.get('/user/',{
                 withCredentials:true,
             }).then(res=>{
                 me.user = res.data;
+            });
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    @action loadOtherUser(userId){
+        try{
+            console.log(`loadUser:확인 ${userId} `)
+            var me = this;
+            axios.get( `/user/${userId}`,{
+                withCredentials:true,
+            }).then(res=>{
+                me.userInfo = res.data;
+                console.log(`loadOtherUser에서 확인 : ${me.userInfo}`)
             });
         }catch(e){
             console.error(e);

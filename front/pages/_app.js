@@ -35,7 +35,7 @@ NodeBird.getInitialProps = async(context)=>{
 
 NodeBird.propTypes ={
     Component : PropTypes.elementType.isRequired,// jsx 에 들어갈 수 있는 모든 것을 node라고 한다. 
-    store: PropTypes.object.isRequired
+    pageProps : PropTypes.object.isRequired
 }
 
 export default NodeBird;
