@@ -10,6 +10,8 @@ export default class PostStore{
     @observable isAddingComment = false;
     @observable addCommentErrorReason = '';
     @observable commentAdded = false; 
+    @observable comments = [];
+    @observable postId = null;
 
     @computed get posts() {
         console.log(posts);
@@ -32,11 +34,16 @@ export default class PostStore{
     }
 
     @action createPost(post){
-        axios.post('/post',{
-            content:post
-        },{
-            withCredentials:true
-        })
+        try{
+            axios.post('/post',{
+                content:post
+            },{
+                withCredentials:true
+            });
+        }catch(e){
+            console.error(e);
+        }
+        
     }
 
     @action updatePost(post){
@@ -47,8 +54,16 @@ export default class PostStore{
 
     }
 
-    @action createComment(comment){
-
+    @action createComment(data){
+        try{
+            axios.post(`/post/${data.postId}/comment`,{
+                content:data.content
+            },{
+                withCredentials:true
+            });
+        }catch(e){
+            log.error(e);
+        }
     }
 
     @action updateComment(comment){
@@ -60,11 +75,48 @@ export default class PostStore{
     }
 
     @action loadMainPosts(){
-        console.log(`postLoad확인1`);
-        var me = this;
-        axios.get('/posts').then(res=>{
-            me.postList = res.data;
-        }); 
+        try{
+            var me = this;
+            axios.get('/posts').then(res=>{
+                me.postList = res.data;
+            }); 
+        }catch(e){
+            log.error(e);
+        }        
     }
 
+    @action loadUserPosts(id){
+        try{
+            var me = this;
+            axios.get(`/user/${id}/posts`).then(res=>{
+                me.postList = res.data;
+            });
+        }catch(e){
+            log.error(e);
+        }
+    }
+
+    @action loadHashtagMainPosts(tag){
+        try{
+            var me = this;
+            axios.get(`/hashtag/${tag}`).then(res=>{
+                me.postList = res.data;
+            });
+        }catch(e){
+            log.error(e);
+        }
+    }
+
+    @action loadComments(postId){
+        try{
+            console.log(`postId 확인해보기 ${postId}`)
+            var me = this;
+            axios.get(`/post/${postId}/comments`).then(res=>{
+                me.comments = res.data;
+                me.postId = postId;
+            });
+        }catch(e){
+            log.error(e);
+        }
+    }
 }

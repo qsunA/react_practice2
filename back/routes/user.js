@@ -69,7 +69,7 @@ router.get('/:id', async (req, res,next) => { // 남의 정보 가져오는 것 
         jsonUser.Posts = jsonUser.Posts ? jsonUser.Posts.length : 0;
         jsonUser.Followings = jsonUser.Followings ? jsonUser.Followings.length : 0;
         jsonUser.Followers = jsonUser.Followers ? jsonUser.Followers.length : 0;
-        req.json(jsonUser);
+        res.json(jsonUser);
     }catch(e){
         console.error(e);
         next(e);
@@ -141,11 +141,12 @@ router.delete('/:id/follower', (req, res) => {
 
 });
 
-router.get('/:id/posts', async (req, res,next) => {
+router.get('/:id/posts', async (req, res,next) => { // 다른사람 정보 가지고 오기
     try{
+        console.log(`getUserPosts 확인 : ${req.params.id}`);
         const posts = await db.Post.findAll({
             where : {
-                id : parseInt(req.params.id,10),
+                UserId : parseInt(req.params.id,10),
                 RetweetId: null,
             },
             include:[{
@@ -153,6 +154,7 @@ router.get('/:id/posts', async (req, res,next) => {
                 attributes : ['id','nickname'],
             }],
         });
+        console.log(`getUserPosts 확인 posts: ${posts}`);
         res.json(posts);
     }catch(e){
         console.error(e);

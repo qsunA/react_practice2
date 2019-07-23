@@ -43,7 +43,7 @@ app.use(passport.session());
 app.use('/api/user', userAPIRouter);
 app.use('/api/post', postAPIRouter);
 app.use('/api/posts', postsAPIRouter);
-//app.use('/api/hashtag', hashtagAPIRouter);
+app.use('/api/hashtag', hashtagAPIRouter);
 
 app.listen(3065, ()=>{
     console.log('server is running on http://localhost:3065');

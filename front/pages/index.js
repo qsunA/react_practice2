@@ -5,7 +5,7 @@ import { inject, observer } from 'mobx-react';
 
 const Home = ({post,userStore}) => {
   const {postList} = post;
-  const {isLoggedIn,user} = userStore;
+  const {user} = userStore;
   
   useEffect(()=>{
     post.loadMainPosts();

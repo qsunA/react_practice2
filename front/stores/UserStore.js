@@ -23,16 +23,13 @@ export default class UserStore{
     @action login(user){ 
         try{
             this.isLoggingIn = true;
-            console.log(`this.isLoggedIn 상태 : ${this.isLoggedIn}`);
             var me = this;
             axios.post('/user/login', user,{
                 withCredentials:true
             }).then(res=>{
-                console.log(`응답받음 : ${res.userId}`);
                 me.isLoggingIn =false;
                 me.isLoggedIn = true;
                 me.user = res.data;
-                console.log(`로그인 : ${me.user}`);
             });
         }catch(e){
             console.error(e);
@@ -82,12 +79,24 @@ export default class UserStore{
 
     @action loadUser(){
         try{
-            console.log(`loadUser:확인 `)
             var me = this;
             axios.get('/user/',{
                 withCredentials:true,
             }).then(res=>{
                 me.user = res.data;
+            });
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    @action loadOtherUser(userId){
+        try{
+            var me = this;
+            axios.get( `/user/${userId}`,{
+                withCredentials:true,
+            }).then(res=>{
+                me.userInfo = res.data;
             });
         }catch(e){
             console.error(e);
