@@ -88,11 +88,13 @@ export default class PostStore{
     @action loadUserPosts(id){
         try{
             var me = this;
+            console.log(`test`);
             axios.get(`/user/${id}/posts`).then(res=>{
                 me.postList = res.data;
             });
         }catch(e){
             log.error(e);
+            
         }
     }
 
