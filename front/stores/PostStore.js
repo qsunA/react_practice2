@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default class PostStore{
     @observable postList = [];
-    @observable imgPath = [];
+    @observable imgPaths = [];
     @observable addPostErrorReason = ''; //포스트 업로드 실패 사유
     @observable isAddingPost = false; // 포스트 업로드 중 
     @observable postAdded= false;//포스트 업로드 성공
@@ -35,10 +35,12 @@ export default class PostStore{
 
     @action createPost(post){
         try{
-            axios.post('/post',{
-                content:post
-            },{
+            const me = this;
+            axios.post('/post',post,{
                 withCredentials:true
+            }).then(res=>{
+                me.postList = [res.data, ...me.postList];
+                me.imgPaths = [];
             });
         }catch(e){
             console.error(e);
@@ -120,5 +122,21 @@ export default class PostStore{
         }catch(e){
             log.error(e);
         }
+    }
+
+    @action uploadImages(formData){
+        const me = this;
+        axios.post('/post/images',formData,{
+            withCredentials:true
+        }).then(res=>{
+            me.imgPaths = [...me.imgPaths, ...res.data];
+        });
+    }
+
+    @action removeImage(idx){
+        const me = this;
+        console.log(`idx확인해보기 image : ${idx}`);
+        me.imgPaths= me.imgPaths.filter((v,i)=>i!==idx);
+        console.log(`idx확인해보기 image : ${me.imgPaths}`);
     }
 }

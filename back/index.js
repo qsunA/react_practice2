@@ -19,6 +19,7 @@ db.sequelize.sync();
 passportConfig();
 
 app.use(morgan('dev'));
+app.use('/',express.static('uploads'));
 app.use(express.json()); // json형식의 본문
 app.use(express.urlencoded({extended:true})); // form으로 나온 것을 처리 
 app.use(cors({

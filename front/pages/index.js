@@ -16,6 +16,7 @@ const Home = ({post,userStore}) => {
       {user?<div>로그인 했습니다. </div>:<div>로그아웃했습니다.</div>}
       {user&&<PostForm/>}
       {postList.map((val,idx)=>{
+        console.log(`post다 확인해보기 : ${val.id} ${val.content}`);
         return(
           <PostCard key={idx} post={val} />
         )

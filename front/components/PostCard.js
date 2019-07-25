@@ -10,11 +10,11 @@ const PostCard = ({post,postStore, userStore})=>{
     const {user} = userStore;
     const {commentAdded,isAddingComment} = postStore;
 
-    const onToggleComment = useCallback(()=>{
+    const onToggleComment = useCallback((postId)=>{
         setCommentFormOpened(prev=>!prev);
-        console.log(`post확인해보기 ${post.id}`);
+        console.log(`post확인해보기 toggle ${postId}`);
         if(!commentFormOpened){
-            postStore.loadComments(post.id);
+            postStore.loadComments(postId);
         }
     },[]);
 
@@ -34,8 +34,9 @@ const PostCard = ({post,postStore, userStore})=>{
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
-    
+    console.log(`post다 확인해보기22 : ${post.id} ${post.content}`)
     return(
+        
         <div>
         <Card
             key={+post.createAt}
@@ -43,7 +44,7 @@ const PostCard = ({post,postStore, userStore})=>{
             actions={[
             <Icon type="retweet" key="retweet"/>,
             <Icon type="heart" key="heart"/>,
-            <Icon type="message" key="message" onClick={onToggleComment}/>,
+            <Icon type="message" key="message" onClick={()=>onToggleComment(post.id)}/>,
             <Icon type="ellipsis" key="ellipsis"/>,
             ]}
             extra={<Button>팔로우</Button>}
