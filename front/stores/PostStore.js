@@ -44,8 +44,7 @@ export default class PostStore{
             });
         }catch(e){
             console.error(e);
-        }
-        
+        }        
     }
 
     @action updatePost(post){

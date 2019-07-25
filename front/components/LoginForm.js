@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { inject, observer } from 'mobx-react';
 
 const LoginForm=({userStore}) =>{
-    const {isLoggedIn,user,isLoggingIn} = userStore;
-    console.log(isLoggedIn);
+    const {user,isLoggingIn} = userStore;
     const [id,onChangeId] = useInput('');
     const [password,onChangePassword] = useInput('');
     const onSubmitForm = useCallback((e) =>{

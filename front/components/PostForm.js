@@ -41,7 +41,6 @@ const PostForm =({postStore})=>{
   const onRemoveImage= useCallback(idx=>()=>{
     postStore.removeImage(idx);
   });
-  console.log(`imgPath 확인하기 비었는지 안비었는지 ${imgPaths}`);
   return(
         <Form style={{margin:'10px 0 20px 0'}} encType="multipart/form-data" onSubmit={onSubmitForm}>
             <Input.TextArea maxLength={140} placeholder="어떤 신기한 일이 생겼나요?" value={text} onChange={onChangeText}/>

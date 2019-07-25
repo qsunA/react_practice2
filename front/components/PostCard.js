@@ -3,6 +3,7 @@ import {Button, Card, Icon, Avatar, Form, Input, List, Comment } from 'antd';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
+import PostImages from './PostImages';
 
 const PostCard = ({post,postStore, userStore})=>{
     const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -12,7 +13,6 @@ const PostCard = ({post,postStore, userStore})=>{
 
     const onToggleComment = useCallback((postId)=>{
         setCommentFormOpened(prev=>!prev);
-        console.log(`post확인해보기 toggle ${postId}`);
         if(!commentFormOpened){
             postStore.loadComments(postId);
         }
@@ -34,13 +34,12 @@ const PostCard = ({post,postStore, userStore})=>{
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
-    console.log(`post다 확인해보기22 : ${post.id} ${post.content}`)
     return(
         
         <div>
         <Card
             key={+post.createAt}
-            cover={post.img && <img alt="example" src={post.img}/>}
+            cover={post.Images&& post.Images[0] && <PostImages images={post.Images}/>}
             actions={[
             <Icon type="retweet" key="retweet"/>,
             <Icon type="heart" key="heart"/>,
