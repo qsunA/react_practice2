@@ -112,7 +112,6 @@ export default class PostStore{
 
     @action loadComments(postId){
         try{
-            console.log(`postId 확인해보기 ${postId}`)
             var me = this;
             axios.get(`/post/${postId}/comments`).then(res=>{
                 me.comments = res.data;
@@ -134,8 +133,34 @@ export default class PostStore{
 
     @action removeImage(idx){
         const me = this;
-        console.log(`idx확인해보기 image : ${idx}`);
         me.imgPaths= me.imgPaths.filter((v,i)=>i!==idx);
-        console.log(`idx확인해보기 image : ${me.imgPaths}`);
+    }
+
+    @action addLike(postId){
+        const me = this;
+        axios.post(`/post/${postId}/like`,{},{
+            withCredentials:true
+        }).then(res=>{
+            const postIdx = me.postList.findIndex(v=>v.id===postId);
+            const post = me.postList[postIdx];
+            const Likers = [{id:res.data.userId}, ...post.Likers];
+            const mainPosts = [...me.postList];
+            mainPosts[postIdx] = {...post,Likers};
+            me.postList = mainPosts;
+        });
+    }
+
+    @action removeLike(postId){
+        const me = this;
+        axios.delete(`/post/${postId}/like`,{
+            withCredentials:true
+        }).then(res=>{
+            const postIdx = me.postList.findIndex(v=>v.id===postId);
+            const post = me.postList[postIdx];
+            const Likers= post.Likers.filter(v=>v.id!==res.data.userId);
+            const mainPosts = [...me.postList];
+            mainPosts[postIdx] = {...post, Likers};
+            me.postList = mainPosts;
+        });
     }
 }

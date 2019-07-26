@@ -10,13 +10,15 @@ const PostCard = ({post,postStore, userStore})=>{
     const [commentText, setCommentText] = useState('');
     const {user} = userStore;
     const {commentAdded,isAddingComment} = postStore;
+    const liked = user && post.Likers && post.Likers.find(v=>v.id===user.id);
 
-    const onToggleComment = useCallback((postId)=>{
+
+    const onToggleComment = useCallback(()=>{
         setCommentFormOpened(prev=>!prev);
         if(!commentFormOpened){
-            postStore.loadComments(postId);
+            postStore.loadComments(post.id);
         }
-    },[]);
+    },[post&&post.id]);
 
     const onSubmitComment = useCallback((e)=>{
         if(!user){
@@ -31,6 +33,26 @@ const PostCard = ({post,postStore, userStore})=>{
         setCommentText(e.target.value);
     },[]);
 
+    const onToggleLike = useCallback(()=>{
+        if(!user){
+            return alert('로그인이 필요합니다.!');
+        }
+        if(liked){
+            postStore.removeLike(post.id);
+        }else{            
+            postStore.addLike(post.id);
+        }
+
+    },[user&& user.id, post&& post.id, liked]);
+
+    const onClickRetweet = useCallback(()=>{
+        if(!user){
+            return alert('로그인이 필요합니다.');
+        }
+
+
+    },[user&&user.id,post&& post.id]);
+
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
@@ -41,9 +63,9 @@ const PostCard = ({post,postStore, userStore})=>{
             key={+post.createAt}
             cover={post.Images&& post.Images[0] && <PostImages images={post.Images}/>}
             actions={[
-            <Icon type="retweet" key="retweet"/>,
-            <Icon type="heart" key="heart"/>,
-            <Icon type="message" key="message" onClick={()=>onToggleComment(post.id)}/>,
+            <Icon type="retweet" key="retweet" onClick={onClickRetweet}/>,
+            <Icon type="heart" key="heart" theme={liked ? 'twoTone' :'outlined'} onClick={onToggleLike}/>,
+            <Icon type="message" key="message" onClick={onToggleComment}/>,
             <Icon type="ellipsis" key="ellipsis"/>,
             ]}
             extra={<Button>팔로우</Button>}

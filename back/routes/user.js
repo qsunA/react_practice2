@@ -152,6 +152,11 @@ router.get('/:id/posts', async (req, res,next) => { // 다른사람 정보 가�
                 attributes : ['id','nickname'],
             },{
                 model: db.Image,
+            },{
+                model:db.User,
+                through:'Like',
+                as : 'Likers',
+                attributes:['id']
             }],
         });
         console.log(`getUserPosts 확인 posts: ${posts}`);
