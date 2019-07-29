@@ -1,4 +1,5 @@
 exports.isLoggedIn = (req,res,next) =>{
+  console.log(`로그인 req.isAuthenticated() 확인 : ${req.user}`)
     if(req.isAuthenticated()){
         next();
     }else{

@@ -102,4 +102,17 @@ export default class UserStore{
             console.error(e);
         }
     }
+
+    @action addFollow(userId){
+        try{
+            const me = this;
+            axios.post(`/user/${userId}/follow`,{},{
+                withCredentials:true,
+            }).then(res=>{
+
+            });
+        }catch(e){
+            console.error(e);
+        }
+    }
 }

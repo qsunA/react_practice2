@@ -124,12 +124,6 @@ router.post('/login', (req, res, next) => { // POST /api/user/login
     })(req,res,next);
 });
 
-router.get('/:id/follow', (req, res) => { // /api/user/:id/follow
-
-});
-router.post('/:id/follow', (req, res) => {
-
-});
 
 router.delete('/:id/follow', (req, res) => {
 
@@ -161,6 +155,20 @@ router.get('/:id/posts', async (req, res,next) => { // 다른사람 정보 가�
         });
         console.log(`getUserPosts 확인 posts: ${posts}`);
         res.json(posts);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.post('/:id/follow',isLoggedIn,async(req,res,next)=>{
+    try{
+        const user = await db.User.findOne({
+            where:{id:req.user.id}
+        });
+        console.log(`팔로잉 중 ${user} ::: ${req.params.id}`)
+        await user.addFollowing(req.params.id);
+        res.send(req.params.id);
     }catch(e){
         console.error(e);
         next(e);

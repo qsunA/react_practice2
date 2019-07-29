@@ -163,4 +163,13 @@ export default class PostStore{
             me.postList = mainPosts;
         });
     }
+
+    @action addRetweet(postId){
+        const me = this;
+        axios.post(`/post/${postId}/retweet`,{},{
+            withCredentials:true,
+        }).then(res=>{
+            me.postList = [res.data, ...me.postList];
+        })
+    }
 }

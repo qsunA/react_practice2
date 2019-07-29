@@ -8,7 +8,8 @@ module.exports = () =>{
         usernameField : 'userId',
         passwordField : 'password',
     }, async(userId,password, done)=>{
-        try{    
+        try{ 
+            console.log(`user확인 passport ${userId}`);   
             const user = await db.User.findOne({where:{userId}});
             if(!user){
                 return done(null,false,{reason:'존재하지 않는 사용자입니다.'});

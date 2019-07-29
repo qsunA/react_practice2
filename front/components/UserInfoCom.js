@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Avatar } from 'antd';
 
 const UserInfoCom = ({userInfo})=>{
-    console.log(`userInfoCom 에서 정보확인:  ${userInfo.Posts}`);
+    console.log(`userInfoCom 에서 정보확인-  ${userInfo.Posts} `);
     return(
         <Card
                     actions={[

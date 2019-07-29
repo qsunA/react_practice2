@@ -1,9 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Link from 'next/link';
 
 const PostCardContent = ({postData}) =>{
     return(
-        <div></div>
+        <div>
+            {postData.split(/(#[^\s]+)/g).map((v,idx)=>{
+                if(v.match(/#[^\s]+/)){
+                    return(
+                        <Link href={{pathname:'/hashtag',query:{tag:v.slice(1)}}} as={`/hashtag/${v.slice(1)}`} key={v}>
+                            <a>{v}</a>
+                        </Link>
+                    );
+                }
+                return v;
+            })}
+        </div>
     );
 }
 
