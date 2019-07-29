@@ -124,11 +124,6 @@ router.post('/login', (req, res, next) => { // POST /api/user/login
     })(req,res,next);
 });
 
-
-router.delete('/:id/follow', (req, res) => {
-
-});
-
 router.delete('/:id/follower', (req, res) => {
 
 });
@@ -166,8 +161,65 @@ router.post('/:id/follow',isLoggedIn,async(req,res,next)=>{
         const user = await db.User.findOne({
             where:{id:req.user.id}
         });
-        console.log(`팔로잉 중 ${user} ::: ${req.params.id}`)
         await user.addFollowing(req.params.id);
+        res.send(req.params.id);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.delete('/:id/follow', isLoggedIn, async(req, res,next) => {
+    try{
+        const user = await db.User.findOne({
+            where:{id:req.user.id}
+        });
+        await user.removeFollowing(req.params.id);
+        res.send(req.params.id);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.get('/:id/followings',isLoggedIn,async(req,res,next)=>{
+    try{
+        const user = await db.User.findOne({
+            where:{id:req.params.id}
+        });
+        console.log(`followings 확인해보기 ${user}`);
+        const followings= await user.getFollowings({
+            attributes:['id','nickname']
+        });
+        res.json(followings);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.get('/:id/followers',isLoggedIn,async(req,res,next)=>{
+    try{
+        const user = await db.User.findOne({
+            where:{id:req.params.id}
+        });
+        console.log(`followers 확인해보기 ${user}`);
+        const followers = await user.getFollowers({
+            attributes:['id','nickname']
+        });
+        res.json(followers);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.delete('/:id/followers',isLoggedIn,async(req,res,next)=>{
+    try{
+        const user = await db.User.findOne({
+            where:{id:req.params.id}
+        });
+        await user.removeFollower(req.params.id);
         res.send(req.params.id);
     }catch(e){
         console.error(e);

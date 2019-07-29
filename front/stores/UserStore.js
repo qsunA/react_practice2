@@ -1,5 +1,7 @@
 import { observable, action } from "mobx";
 import axios from 'axios';
+import {asyncAction} from "mobx-utils";
+import userRepository from "../repository/UserRepository";
 
 axios.defaults.baseURL = 'http://localhost:3065/api';
 
@@ -20,99 +22,95 @@ export default class UserStore{
         this.root = root;
     }
 
-    @action login(user){ 
-        try{
-            this.isLoggingIn = true;
-            var me = this;
-            axios.post('/user/login', user,{
-                withCredentials:true
-            }).then(res=>{
-                me.isLoggingIn =false;
-                me.isLoggedIn = true;
-                me.user = res.data;
-            });
-        }catch(e){
-            console.error(e);
-            //this.logInErrorReason = e;
-        }           
+    @asyncAction
+    async *login(user){
+        const {data, status} = yield userRepository.login(user);
+        // isLoggingIn/ isLoggedIn 
+        this.user = data;
     }
 
-    @action logout(){
-        try{
-            var me = this;
-            me.isLoggedIn = false;
-            axios.post('/user/logout/',{},{ //axios 에서 post로 보낼때 두번째 인자는 데이터가 온다. 
-                withCredentials:true 
-            }).then(res=>{
-                me.user = null;
-            });
-        }catch(e){
-            console.error(e);
-        }        
+    @asyncAction
+    async *logout(){
+        const {data,status} = yield userRepository.logout();
+        this.user = null;
     }
 
-    @action signUp(user){
-        try{
-            this.isSigningUp = true;
-
-            var me = this;
-            axios.post('/user/',{
-                nickname: user.nickname,
-                userId : user.userId,
-                hashedPassword : user.password, // 비밀번호가 post에서 바로 노출되기 때문에 노출되지 않는 방법 확인 
-            }).then(res=>{
-                me.isSignedUp = true;
-                me.isSigningUp = false;
-                // 그 다음 액션에 관한게 없어서 그 후 액션 어떻게 되는지 구현 
-            });
-
-            // var me = this;
-            // setTimeout(()=>{
-            //     me.isSignedUp = true;
-            //     me.isSigningUp = false;
-            // },3000);
-        }catch(e){
-            console.error(e);
-            this.signUpErrorReason = e;
-        }        
+    @asyncAction
+    async *signUp(user){
+        const {data,status} = yield userRepository.signup(user);
+        this.isSignedUp = true;
+        this.isSigningUp = false;
     }
 
-    @action loadUser(){
-        try{
-            var me = this;
-            axios.get('/user/',{
-                withCredentials:true,
-            }).then(res=>{
-                me.user = res.data;
-            });
-        }catch(e){
-            console.error(e);
-        }
+    @asyncAction
+    async *loadUser(){
+        const {data,status} = yield userRepository.loadUser();
+        this.user = data;
     }
 
-    @action loadOtherUser(userId){
-        try{
-            var me = this;
-            axios.get( `/user/${userId}`,{
-                withCredentials:true,
-            }).then(res=>{
-                me.userInfo = res.data;
-            });
-        }catch(e){
-            console.error(e);
-        }
+    @asyncAction
+    async *loadOtherUser(userId){
+        const {data,status} = yield userRepository.loadOtherUser();
+        this.userInfo = data;
     }
 
-    @action addFollow(userId){
-        try{
-            const me = this;
-            axios.post(`/user/${userId}/follow`,{},{
-                withCredentials:true,
-            }).then(res=>{
-
-            });
-        }catch(e){
-            console.error(e);
-        }
+    @asyncAction
+    async *addFollow(userId){
+        const {data,status} = yield userRepository.addFollow(userId);
+        yield this.loadUser();
     }
+
+    @asyncAction *removeFollow(userId){
+        const {data,status} = yield userRepository.removeFollow(userId);
+        yield this.loadUser();
+    }   
+
+    @asyncAction *loadFollowings(userId){
+        const {data,status} = yield userRepository.loadFollowings(userId);
+        this.followingList = data;
+    }
+
+    @asyncAction *loadFollowers(userId){
+        const {data,status} = yield userRepository.loadFollowers(userId);
+        this.followerList = data;
+    }
+
+    @asyncAction *removeFollower(userId){
+        const {data,status} = yield userRepository.removeFollower(userId);
+        this.loadFollowers(userId);
+    }
+
+    @asyncAction *removeFollowing(userId){
+        const {data,status} = yield userRepository.removeFollow(userId);
+        this.loadFollowings(userId);
+    }
+
+    // @action addFollow(userId){
+    //     try{
+    //         const me = this;
+    //         axios.post(`/user/${userId}/follow`,{},{
+    //             withCredentials:true,
+    //         }).then(res=>{
+    //            // const followingList = me.user.Followings;
+    //            // me.user.Followings = [{id:res.data}, ...followingList];
+    //         });
+    //     }catch(e){
+    //         console.error(e);
+    //     }
+    // }
+
+    // @action removeFollow(userId){
+    //     try{
+    //         const me = this;
+
+    //         axios.delete(`/user/${userId}/follow`,{
+    //             withCredentials:true
+    //         }).then(res=>{                
+    //            // const followingList = me.user.Followings;
+    //            // me.user.Followings = followingList.filter(v=>v.id!==res.data);
+    //         });
+    //     }catch(e){
+    //         console.error(e);
+    //     }
+    // }
 }

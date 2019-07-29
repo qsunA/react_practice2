@@ -55,16 +55,20 @@ const PostCard = ({post,postStore, userStore})=>{
     },[user&&user.id,post&& post.id]);
 
     const onClickFollowing = useCallback((userId) =>()=> {
-        if(!user){
-            return alert('로그인이 필요합니다.');
-        }
-        console.log(`팔로잉시 로그인 확인 ${user.id} ::: ${userId}`)
+        console.log(`follow test확인`);
+        
         userStore.addFollow(userId);
-    },[user&&user.id]);
+    },[]);
+
+    const onClickUnFollowing = useCallback((userId) => ()=> {
+        
+        userStore.removeFollow(userId);   
+    },[]);
 
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
+
     return(
         
         <div>
@@ -78,8 +82,13 @@ const PostCard = ({post,postStore, userStore})=>{
             <Icon type="message" key="message" onClick={onToggleComment}/>,
             <Icon type="ellipsis" key="ellipsis"/>,
             ]}
-            extra={<Button onClick={onClickFollowing(post.User.id)}>팔로우</Button>}
-        >
+            extra={!user||user.id === post.User.id ? null :
+                (
+                    user.Followings && user.Followings.some(itm=>itm.id===post.User.id) ? 
+                    <Button onClick={onClickUnFollowing(post.User.id)}>언팔로우</Button>
+                    :<Button onClick={onClickFollowing(post.User.id)}>팔로우</Button>
+                )
+            }>
             {
                 post.RetweetId && post.Retweet ? (
                     <Card

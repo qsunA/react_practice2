@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Form, Input, Button, List, Card, Icon } from 'antd';
 import NicknameEditForm from '../components/NicknameEditForm';
+import { inject, observer } from 'mobx-react';
 
-const  Profile= () =>{
+const  Profile= ({userStore}) =>{
+    const {user,followingList,followerList} =userStore;
+
+    useEffect(()=>{
+        if(user){
+            userStore.loadFollowings(user.id);
+            userStore.loadFollowers(user.id);
+        }
+    },[user && user.id]);
+
+    const onClickUnFollower = useCallback((userId)=>()=>{
+        userStore.removeFollower(userId);
+    },[]);
+
+    const onClickUnFollowing = useCallback((userId)=>()=>{
+        userStore.removeFollowing(userId);
+    },[]);
+    
     return (
         <div>
             <NicknameEditForm/>
@@ -13,10 +31,10 @@ const  Profile= () =>{
                 header={<div>팔로워 목록</div>}
                 loadMore={<Button style={{width:'100%'}}>더 보기</Button>}
                 bordered
-                dataSource={['루비','ruby','react']}
+                dataSource={followerList}
                 renderItem = {item=>(
                     <List.Item style={{marginTop:'20px'}}>
-                        <Card actions={[<Icon key="stop" type="stop"/>]}><Card.Meta description={item}/></Card>
+                        <Card actions={[<Icon key="stop" type="stop" onClick={onClickUnFollower(item.id)}/>]}><Card.Meta description={item.nickname}/></Card>
                     </List.Item>
                 )}
             />
@@ -27,10 +45,10 @@ const  Profile= () =>{
                 header={<div>팔로잉 목록</div>}
                 loadMore={<Button style={{width:'100%'}}>더 보기</Button>}
                 bordered
-                dataSource={['루비','ruby','react']}
+                dataSource={followingList}
                 renderItem = {item=>(
                     <List.Item style={{marginTop:'20px'}}>
-                        <Card actions={[<Icon key="stop" type="stop"/>]}><Card.Meta description={item}/></Card>
+                        <Card actions={[<Icon key="stop" type="stop" onClick={onClickUnFollowing(item.id)}/>]}><Card.Meta description={item.nickname}/></Card>
                     </List.Item>
                 )}
             />
@@ -38,4 +56,6 @@ const  Profile= () =>{
     );     
 };
 
-export default Profile;
+export default inject(({store})=>({
+    userStore:store.userStore
+}))(observer(Profile));
