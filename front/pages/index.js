@@ -24,6 +24,12 @@ const Home = ({post,userStore}) => {
   );
 };
 
+Home.getInitialProps = async(context)=>{
+  console.log(`main화면 ${Object.keys(context)}`);
+  console.log(`main화면 ${Object.keys(context.store.userStore)}`);
+  context.store.postStore.loadMainPosts();
+};
+
 export default inject(({store})=>({
   post: store.postStore,
   userStore : store.userStore

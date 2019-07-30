@@ -3,9 +3,9 @@ import AppLayout from "../components/AppLayout";
 import PropTypes from 'prop-types';
 import Head from "next/head";
 import { Provider } from 'mobx-react';
-import RootStore from '../stores/RootStore';
+import { initializeStore } from '../stores/RootStore';
 
-const store = new RootStore();
+const store = new initializeStore;
 
 const NodeBird = ({Component, pageProps})=>{
     return(
@@ -28,6 +28,7 @@ const NodeBird = ({Component, pageProps})=>{
 NodeBird.getInitialProps = async(context)=>{
     console.log(context);
     const {ctx,Component} = context;
+    ctx.store= store;
     let pageProps = {};
     if(Component.getInitialProps){
         pageProps = await Component.getInitialProps(ctx);

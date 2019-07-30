@@ -8,4 +8,6 @@ class RootStore{
     }
 }
 
-export default RootStore;
+export function initializeStore(){
+    return new RootStore();
+}

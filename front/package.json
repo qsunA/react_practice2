@@ -21,6 +21,7 @@
     "mobx-utils": "^5.4.1",
     "morgan": "^1.9.1",
     "next": "^9.0.0",
+    "next-mobx-wrapper": "^0.4.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
