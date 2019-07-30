@@ -50,7 +50,7 @@ export default class UserStore{
 
     @asyncAction
     async *loadOtherUser(userId){
-        const {data,status} = yield userRepository.loadOtherUser();
+        const {data,status} = yield userRepository.loadOtherUser(userId);
         this.userInfo = data;
     }
 
@@ -77,40 +77,16 @@ export default class UserStore{
 
     @asyncAction *removeFollower(userId){
         const {data,status} = yield userRepository.removeFollower(userId);
-        this.loadFollowers(userId);
+        this.loadFollowers(this.user.id);
     }
 
     @asyncAction *removeFollowing(userId){
         const {data,status} = yield userRepository.removeFollow(userId);
-        this.loadFollowings(userId);
+        this.loadFollowings(this.user.id);
     }
 
-    // @action addFollow(userId){
-    //     try{
-    //         const me = this;
-    //         axios.post(`/user/${userId}/follow`,{},{
-    //             withCredentials:true,
-    //         }).then(res=>{
-    //            // const followingList = me.user.Followings;
-    //            // me.user.Followings = [{id:res.data}, ...followingList];
-    //         });
-    //     }catch(e){
-    //         console.error(e);
-    //     }
-    // }
-
-    // @action removeFollow(userId){
-    //     try{
-    //         const me = this;
-
-    //         axios.delete(`/user/${userId}/follow`,{
-    //             withCredentials:true
-    //         }).then(res=>{                
-    //            // const followingList = me.user.Followings;
-    //            // me.user.Followings = followingList.filter(v=>v.id!==res.data);
-    //         });
-    //     }catch(e){
-    //         console.error(e);
-    //     }
-    // }
+    @asyncAction *updateNickName(userNickName){
+        const {data,status} = yield userRepository.updateNickName(userNickName);
+        this.user.nickname = data;
+    }
 }

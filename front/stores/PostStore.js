@@ -100,6 +100,7 @@ export default class PostStore{
     }
 
     @action loadHashtagMainPosts(tag){
+        console.log(`loadHashtag 테스트`)
         try{
             var me = this;
             axios.get(`/hashtag/${tag}`).then(res=>{

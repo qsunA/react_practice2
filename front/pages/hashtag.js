@@ -7,7 +7,7 @@ const Hashtag = ({tag,postStore})=>{
     const {postList} = postStore;
     useEffect(()=>{        
         postStore.loadHashtagMainPosts(tag);
-    },[]);
+    },[tag]);
     return(
         <div>
             {postList.map((c,idx)=>(

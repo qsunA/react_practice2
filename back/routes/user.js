@@ -227,4 +227,20 @@ router.delete('/:id/followers',isLoggedIn,async(req,res,next)=>{
     }
 });
 
+router.patch(`/nickname`,isLoggedIn,async(req,res,next)=>{
+    try{
+        console.log(`nickname edit ${req.body.userNickName} :: ${req.user.id}`)
+        await db.User.update({
+            nickname:req.body.userNickName
+        },{
+            where:{id:req.user.id},
+        });
+
+        res.send(req.body.userNickName);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
 module.exports = router;

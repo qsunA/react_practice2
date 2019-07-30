@@ -68,6 +68,13 @@ class UserRepository{
             withCredentials:true
         });
     }
+
+    updateNickName(userNickName){
+        console.log(`userNickname 확인 ${userNickName}`)
+        return axios.patch(`${this.URL}/nickname`,{userNickName},{
+            withCredentials:true
+        });
+    }
 }
 
 export default new UserRepository();
