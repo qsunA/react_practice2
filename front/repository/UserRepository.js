@@ -8,6 +8,7 @@ class UserRepository{
     }
 
     login(user){
+        console.log(`login user확인해보기 :: ${this.user}`);
         return axios.post( `${this.URL}/login`,user,{
             withCredentials:true
         });

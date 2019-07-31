@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import {Menu, Input, Button, Row, Col, Card, Avatar} from 'antd';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
-import { observer, inject } from 'mobx-react';
+import { observer, inject, MobXProviderContext } from 'mobx-react';
 
-const AppLayout = ({children,userStore})=>{
+const AppLayout = ({children})=>{
+
+    const {userStore}= useContext(MobXProviderContext);
     const {user} = userStore;
 
     // 전체적으로 내 정보가 있는지 확인하고 없으면 내 정보를 불러오는 로직을 작성 해줘야한다. 
@@ -16,6 +18,7 @@ const AppLayout = ({children,userStore})=>{
             userStore.loadUser();
         }
     },[]);
+
     return(
         <div>
             <Menu mode="horizontal">
@@ -44,6 +47,4 @@ AppLayout.propTypes = {
     children : PropTypes.node
 }
 
-export default inject(({store})=>({
-    userStore:store.userStore
-}))(observer(AppLayout));
+export default observer(AppLayout);

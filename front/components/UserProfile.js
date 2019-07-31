@@ -1,12 +1,12 @@
 import React, { useContext, useCallback } from 'react';
 import { Card, Avatar, Button } from 'antd';
-import RootStore from '../stores/RootStore';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
-const UserProfile = ({userStore})=>{
+const UserProfile = ()=>{
 
+    const {userStore}= useContext(MobXProviderContext);
     const {user} = userStore;
-
+    console.log(`user확인해보기 :: ${user}`);
     const onLogout = useCallback(()=>{
         userStore.logout();
     },[]);
@@ -31,6 +31,4 @@ const UserProfile = ({userStore})=>{
     );
 }
 
-export default inject(({store})=>({
-    userStore:store.userStore
-}))(observer(UserProfile));
+export default observer(UserProfile);

@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Form, Input, Button } from 'antd';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
-const NicknameEditForm= ({userStore})=>{
+const NicknameEditForm= ()=>{
+    const {userStore}= useContext(MobXProviderContext);
     const [editedName, setEditedName]=useState('');
     const {user}= userStore;
 
@@ -25,6 +26,4 @@ const NicknameEditForm= ({userStore})=>{
     );
 }
 
-export default inject(({store})=>({
-    userStore:store.userStore
-}))(observer(NicknameEditForm));
+export default observer(NicknameEditForm);

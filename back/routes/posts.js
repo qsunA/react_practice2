@@ -28,6 +28,7 @@ router.get('/', async (req, res, next) => { // GET /api/posts
             }],
             order:[['createdAt','DESC']]
         });
+        console.log(`**** posts확인해보기 : ${posts}`)
         res.json(posts);
     }catch(e){
         console.error(e);

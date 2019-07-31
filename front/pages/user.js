@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import { Avatar,Card } from 'antd';
-import { inject, observer } from 'mobx-react';
-import { useEffect } from 'react';
+import { observer, MobXProviderContext } from 'mobx-react';
+import { useEffect, useContext } from 'react';
 import PostCard from '../components/PostCard';
 import UserInfoCom from '../components/UserInfoCom';
 
-const User = ({id,userStore,postStore})=>{
+const User = ({id})=>{
 
+    const {userStore,postStore}= useContext(MobXProviderContext);
     const {userInfo} = userStore;
     const {postList} = postStore;
 
@@ -41,7 +41,4 @@ User.getInitialProps= async(context)=>{// ssr인 경우 getInitialProps에서 �
     }
 };
 
-export default inject(({store})=>({
-    userStore : store.userStore,
-    postStore : store.postStore
-})) (observer(User));
+export default observer(User);

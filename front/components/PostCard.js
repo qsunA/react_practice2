@@ -1,12 +1,13 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
 import {Button, Card, Icon, Avatar, Form, Input, List, Comment } from 'antd';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
 
-const PostCard = ({post,postStore, userStore})=>{
+const PostCard = ({post})=>{
+    const {userStore,postStore} = useContext(MobXProviderContext);
     const [commentFormOpened, setCommentFormOpened] = useState(false);
     const [commentText, setCommentText] = useState('');
     const {user} = userStore;
@@ -149,7 +150,4 @@ PostCard.propTypes = {
     })
 }
 
-export default inject(({store})=>({
-    userStore : store.userStore,
-    postStore : store.postStore
-})) (observer(PostCard));
+export default observer(PostCard);

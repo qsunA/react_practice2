@@ -1,9 +1,9 @@
 import React, { useCallback, useState, useContext, useRef } from 'react';
 import { Form, Input, Button } from 'antd';
-import RootStore from '../stores/RootStore';
-import { inject, observer } from 'mobx-react';
+import { observer, MobXProviderContext } from 'mobx-react';
 
-const PostForm =({postStore})=>{
+const PostForm =()=>{
+  const {postStore} = useContext(MobXProviderContext);
   const [text,setText] = useState('');
   const imageInput = useRef();
   const {imgPaths} = postStore;
@@ -65,6 +65,4 @@ const PostForm =({postStore})=>{
     )
 }
 
-export default inject(({store})=>({
-  postStore : store.postStore
-}))(observer(PostForm));
+export default observer(PostForm);

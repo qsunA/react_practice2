@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-import { inject, observer } from 'mobx-react';
+import { observer, MobXProviderContext } from 'mobx-react';
 
-const Home = ({post,userStore}) => {
-  const {postList} = post;
-  const {user} = userStore;
+const Home = () => {
+   const {userStore,postStore} = useContext(MobXProviderContext);
+   const {postList} = postStore;
+   const {user} = userStore;
   
-  useEffect(()=>{
-    post.loadMainPosts();
-  },[]);
-
+  // useEffect(()=>{
+  //   postStore.loadMainPosts();
+  //   console.log('test');
+  // },[]);
+  
+  console.log(`***postList확인해보기 ${postList.length}`)
   return (
     <div>
       {user?<div>로그인 했습니다. </div>:<div>로그아웃했습니다.</div>}
@@ -25,12 +28,7 @@ const Home = ({post,userStore}) => {
 };
 
 Home.getInitialProps = async(context)=>{
-  console.log(`main화면 ${Object.keys(context)}`);
-  console.log(`main화면 ${Object.keys(context.store.userStore)}`);
   context.store.postStore.loadMainPosts();
 };
 
-export default inject(({store})=>({
-  post: store.postStore,
-  userStore : store.userStore
-}))(observer(Home));
+export default observer(Home);

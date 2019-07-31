@@ -1,11 +1,12 @@
-import { observable, action } from "mobx";
+import { observable } from "mobx";
 import axios from 'axios';
 import {asyncAction} from "mobx-utils";
 import userRepository from "../repository/UserRepository";
+import {BaseStore, getOrCreateStore} from 'next-mobx-wrapper';
 
 axios.defaults.baseURL = 'http://localhost:3065/api';
 
-export default class UserStore{
+class UserStore extends BaseStore{
     @observable isLoggedIn =false; // 로그인 여부
     @observable user = null;
     @observable isLoggingOut = false;  // 로그아웃 시도중
@@ -18,15 +19,16 @@ export default class UserStore{
     @observable followerList = []; // 팔로워 리스트 
     @observable userInfo = null // 남의 정보
 
-    constructor(root){
-        this.root = root;
-    }
+    // constructor(root){
+    //     this.root = root;
+    // }
 
     @asyncAction
-    async *login(user){
-        const {data, status} = yield userRepository.login(user);
+    async *login(usere){
+        const {data, status} = yield userRepository.login(usere);
         // isLoggingIn/ isLoggedIn 
         this.user = data;
+        
     }
 
     @asyncAction
@@ -90,3 +92,5 @@ export default class UserStore{
         this.user.nickname = data;
     }
 }
+
+export const getUserStore = getOrCreateStore('userStore',UserStore);

@@ -1,10 +1,13 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useContext } from 'react';
 import { Form, Input, Button, List, Card, Icon } from 'antd';
 import NicknameEditForm from '../components/NicknameEditForm';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
-const  Profile= ({userStore}) =>{
+const  Profile= () =>{
+    const {userStore}= useContext(MobXProviderContext);
     const {user,followingList,followerList} =userStore;
+
+    console.log(`user확인해보기 :: ${user}`);
 
     useEffect(()=>{
         if(user){
@@ -56,6 +59,4 @@ const  Profile= ({userStore}) =>{
     );     
 };
 
-export default inject(({store})=>({
-    userStore:store.userStore
-}))(observer(Profile));
+export default observer(Profile);

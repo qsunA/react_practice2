@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import PostCard from '../components/PostCard';
-import { useEffect } from 'react';
-import { inject, observer } from 'mobx-react';
+import { useEffect, useContext } from 'react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
-const Hashtag = ({tag,postStore})=>{
+const Hashtag = ({tag})=>{
+    const {postStore}= useContext(MobXProviderContext);
     const {postList} = postStore;
     useEffect(()=>{        
         postStore.loadHashtagMainPosts(tag);
@@ -26,6 +27,4 @@ Hashtag.getInitialProps= async(context)=>{// ssr인 경우 getInitialProps에서
     return {tag:context.query.tag};
 };
 
-export default inject(({store})=>({
-    postStore : store.postStore
-})) (observer(Hashtag));
+export default observer(Hashtag);

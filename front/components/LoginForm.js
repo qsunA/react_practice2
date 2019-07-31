@@ -1,11 +1,13 @@
-import React,{useCallback} from 'react';
+import React,{useCallback, useContext} from 'react';
 import {useInput} from '../pages/signup';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
-const LoginForm=({userStore}) =>{
+const LoginForm=() =>{
+    const {userStore}= useContext(MobXProviderContext);
     const {user,isLoggingIn} = userStore;
+    console.log(`user확인해보기 :: ${user}`);
     const [id,onChangeId] = useInput('');
     const [password,onChangePassword] = useInput('');
     const onSubmitForm = useCallback((e) =>{
@@ -37,6 +39,4 @@ const LoginForm=({userStore}) =>{
     );
 }
 
-export default inject(({store}) =>({
-    userStore: store.userStore
-}))(observer(LoginForm));
+export default observer(LoginForm);
