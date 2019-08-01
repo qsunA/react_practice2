@@ -14,6 +14,7 @@ export const useInput = (initValue = null) =>{
 
 const  Signup= () =>{
     const {userStore}= useContext(MobXProviderContext);
+    const {user} = userStore;
     const [id,setId] = useState('');
     const [nick,setNick] = useState('');
     const [password,setPassword] = useState('');
@@ -68,6 +69,10 @@ const  Signup= () =>{
         setTerm(e.target.checked);
     },[]);
     
+    if(user){
+        return null;
+    }
+
     return (
         <>
             <Form onSubmit={onSubmit} style={{padding:10}}>

@@ -12,6 +12,12 @@ class PostRepository{
         });
     }
 
+    removePost(postId){
+        return axios.delete(`/post/${postId}`,{
+            withCredentials:true
+        });
+    }
+
     createComment(data){
         return axios.post(`/post/${data.postId}/comment`,{
             content:data.content
@@ -20,8 +26,8 @@ class PostRepository{
         });
     }
 
-    loadMainPosts(){
-        return axios.get('/posts');
+    loadMainPosts(lastId =0 ,limit=10){
+        return axios.get(`/posts?lastId=${lastId}&limit=${limit}`);
     }
 
     loadUserPosts(id){
@@ -29,7 +35,7 @@ class PostRepository{
     }
 
     loadHashtagMainPosts(tag){
-        return axios.get(`/hashtag/${tag}`);
+        return axios.get(`/hashtag/${encodeURIComponent(tag)}`);
     }
 
     loadComments(postId){

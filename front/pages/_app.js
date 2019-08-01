@@ -8,9 +8,9 @@ import App,{ Container }  from 'next/app';
 import * as getStores from '../stores';
 import { configure } from 'mobx';
 import { withMobx } from 'next-mobx-wrapper';
+import axios from 'axios';
 
 const isServer = !process.browser;
-console.log(`isServer 확인 :: ${isServer}`)
 
 configure({enforceActions:'observed'});
 useStaticRendering(isServer);
@@ -19,6 +19,16 @@ class NodeBird extends App{
 
     static async getInitialProps({Component,ctx}){
         let pageProps = {};
+        const user = ctx.store.userStore.user;
+        const cookie = isServer? ctx.req.headers.cookie:'';
+        if(isServer && cookie){
+            axios.defaults.headers.Cookie = cookie; // ssr을 위해서 쿠키를 넣어준
+        }
+        
+        if(!user){
+            await ctx.store.userStore.loadUser();
+        }    
+        
         if(Component.getInitialProps){
             pageProps = await Component.getInitialProps(ctx);
         }
@@ -27,7 +37,6 @@ class NodeBird extends App{
 
     render(){
         const {Component, pageProps,store} = this.props;
-        console.log(`store확인 ${store.userStore}`)
         return(
             <Container>
                 <Head>

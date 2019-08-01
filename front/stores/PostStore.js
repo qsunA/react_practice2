@@ -1,8 +1,9 @@
-import {observable, computed, action} from 'mobx';
+import {observable, computed, action, when} from 'mobx';
 import axios from 'axios';
 import { BaseStore, getOrCreateStore } from 'next-mobx-wrapper';
 import { asyncAction } from 'mobx-utils';
 import postRepository from '../repository/PostRepository';
+
 class PostStore extends BaseStore{
     @observable postList = [];
     @observable imgPaths = [];
@@ -14,6 +15,8 @@ class PostStore extends BaseStore{
     @observable commentAdded = false; 
     @observable comments = [];
     @observable postId = null;
+    @observable hasMorePost = true;
+    @observable numberRequest=0;
 
     @computed get posts() {
         console.log(posts);
@@ -56,22 +59,17 @@ class PostStore extends BaseStore{
         this.loadMainPosts();
     }
 
+    @asyncAction
+    async *removePost(postId){
+        const {data,status} = yield postRepository.removePost(postId);
+        this.loadMainPosts();
+    }
+
     @asyncAction 
     async *createComment(comment){
         const {data,status} = yield postRepository.createComment(comment);
+        
     }
-
-    // @action createComment(data){
-    //     try{
-    //         axios.post(`/post/${data.postId}/comment`,{
-    //             content:data.content
-    //         },{
-    //             withCredentials:true
-    //         });
-    //     }catch(e){
-    //         log.error(e);
-    //     }
-    // }
 
     @action updateComment(comment){
 
@@ -82,16 +80,25 @@ class PostStore extends BaseStore{
     }
 
     @asyncAction
-    async *loadMainPosts(){
-        const {data,status} = yield postRepository.loadMainPosts();
+    async *loadMainPosts(lastId){
+        this.postList = lastId ===0?[]:this.postList;
+        this.hasMorePost = lastId ? this.hasMorePost : true;
+        console.log(`********* lastId확인하기 ${lastId} ::: ${this.postList.length}`)
+        
+        const {data,status} = yield  postRepository.loadMainPosts(lastId);
+        // data.forEach((val)=>{
+        //     this.postList.push(data);
+        // });
         this.postList = data;
-        console.log(`***** postStore.loadMainPosts() 확인${data}`)
+        this.hasMorePost = data.length --
     }
 
     @asyncAction 
     async *loadUserPosts(id){
         const {data, status} = yield postRepository.loadUserPosts(id);
         this.postList = data;
+        var me = this;
+        console.log(`me 확인해보기 ${me}`)
     }
 
     // @action loadUserPosts(id){

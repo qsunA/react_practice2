@@ -22,7 +22,6 @@ const upload = multer({
 
 router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /api/post
     try{
-        console.log(`createPost222확인해보기 ${req.body.content}`)
         const hashtags = req.body.content.match(/#[^\s]+/g); // 정규표현식으로 해시태그 뽑아냄
         const newPost = await db.Post.create({
             content:req.body.content,
@@ -193,6 +192,20 @@ router.post('/:id/retweet',isLoggedIn,async(req,res,next)=>{
             }]
         });
         res.json(retweetWithPrevPost);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.delete('/:id',isLoggedIn,async(req,res,next)=>{
+    try{
+        const post = await db.Post.findOne({where:{id:req.params.id}});
+        if(!post){
+            return res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+        await db.Post.destroy({where : {id:req.params.id}});
+        res.send(req.params.id);
     }catch(e){
         console.error(e);
         next(e);

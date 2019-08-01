@@ -187,9 +187,10 @@ router.get('/:id/followings',isLoggedIn,async(req,res,next)=>{
         const user = await db.User.findOne({
             where:{id:req.params.id}
         });
-        console.log(`followings 확인해보기 ${user}`);
         const followings= await user.getFollowings({
-            attributes:['id','nickname']
+            attributes:['id','nickname',[user.sequelize.fn('count','*'),'total']],
+            limit:parseInt(req.query.limit, 10),
+            offset:parseInt(req.query.offset, 10),
         });
         res.json(followings);
     }catch(e){
@@ -203,9 +204,10 @@ router.get('/:id/followers',isLoggedIn,async(req,res,next)=>{
         const user = await db.User.findOne({
             where:{id:req.params.id}
         });
-        console.log(`followers 확인해보기 ${user}`);
         const followers = await user.getFollowers({
-            attributes:['id','nickname']
+            attributes:['id','nickname',[user.sequelize.fn('count','*'),'total']],
+            limit:parseInt(req.query.limit, 10),
+            offset:parseInt(req.query.offset, 10),
         });
         res.json(followers);
     }catch(e){

@@ -6,7 +6,6 @@ const UserProfile = ()=>{
 
     const {userStore}= useContext(MobXProviderContext);
     const {user} = userStore;
-    console.log(`user확인해보기 :: ${user}`);
     const onLogout = useCallback(()=>{
         userStore.logout();
     },[]);

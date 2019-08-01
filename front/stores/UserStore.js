@@ -19,16 +19,11 @@ class UserStore extends BaseStore{
     @observable followerList = []; // 팔로워 리스트 
     @observable userInfo = null // 남의 정보
 
-    // constructor(root){
-    //     this.root = root;
-    // }
-
     @asyncAction
     async *login(usere){
         const {data, status} = yield userRepository.login(usere);
         // isLoggingIn/ isLoggedIn 
-        this.user = data;
-        
+        this.user = data;        
     }
 
     @asyncAction
@@ -46,8 +41,15 @@ class UserStore extends BaseStore{
 
     @asyncAction
     async *loadUser(){
-        const {data,status} = yield userRepository.loadUser();
-        this.user = data;
+        try{
+            const {data,status} = yield userRepository.loadUser();
+            var me = this;
+            me.user = data;
+            console.log(`***_app.js  :: user확인 333:::: ${me.user}`);
+        }catch(e){
+            //console.error(e);
+        }
+        
     }
 
     @asyncAction
@@ -67,13 +69,14 @@ class UserStore extends BaseStore{
         yield this.loadUser();
     }   
 
-    @asyncAction *loadFollowings(userId){
-        const {data,status} = yield userRepository.loadFollowings(userId);
-        this.followingList = data;
+    @asyncAction *loadFollowings(userId, offset, limit){
+        const {data,status} = yield userRepository.loadFollowings(userId,offset,limit);
+        this.followingList.push(...data);
     }
 
-    @asyncAction *loadFollowers(userId){
-        const {data,status} = yield userRepository.loadFollowers(userId);
+    @asyncAction *loadFollowers(userId, offset, limit){
+        
+        const {data,status} = yield userRepository.loadFollowers(userId,offset,limit);
         this.followerList = data;
     }
 
