@@ -17,6 +17,7 @@ class PostStore extends BaseStore{
     @observable postId = null;
     @observable hasMorePost = true;
     @observable numberRequest=0;
+    @observable post = null;
 
     @computed get posts() {
         console.log(posts);
@@ -89,8 +90,8 @@ class PostStore extends BaseStore{
         // data.forEach((val)=>{
         //     this.postList.push(data);
         // });
-        this.postList = data;
-        this.hasMorePost = data.length --
+        this.postList = [...this.postList, ...data];
+        this.hasMorePost = data.length ===10;
     }
 
     @asyncAction 
@@ -98,7 +99,6 @@ class PostStore extends BaseStore{
         const {data, status} = yield postRepository.loadUserPosts(id);
         this.postList = data;
         var me = this;
-        console.log(`me 확인해보기 ${me}`)
     }
 
     // @action loadUserPosts(id){
@@ -189,6 +189,12 @@ class PostStore extends BaseStore{
     async *addRetweet(postId){        
         const {data,status} = yield postRepository.addRetweet(postId);
         this.loadMainPosts();
+    }
+
+    @asyncAction
+    async *loadPost(postId){
+        const {data,status} = yield postRepository.loadPost(postId);
+        this.post = data;
     }
 
     // @action addLike(postId){

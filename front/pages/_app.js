@@ -1,7 +1,7 @@
 import React from 'react';
 import AppLayout from "../components/AppLayout";
 import PropTypes from 'prop-types';
-import Head from "next/head";
+import Helmet from 'react-helmet';
 import { Provider, useStaticRendering } from 'mobx-react';
 import App,{ Container }  from 'next/app';
 
@@ -30,7 +30,7 @@ class NodeBird extends App{
         }    
         
         if(Component.getInitialProps){
-            pageProps = await Component.getInitialProps(ctx);
+            pageProps = await Component.getInitialProps(ctx) || {};
         }
         return {pageProps};
     }
@@ -39,13 +39,36 @@ class NodeBird extends App{
         const {Component, pageProps,store} = this.props;
         return(
             <Container>
-                <Head>
-                    <title>NodeBird</title>
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.css" />
-                    <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
-                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
-                </Head>
-                <Provider {...store}>                    
+                <Helmet
+                    title="NodeBird"
+                    htmlAttributes ={{lang :'ko'}}
+                    meta={[{
+                            charset:'UTR-8'
+                        },{
+                            name:'viewport', content:'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=yes,viewport-fit=cover'                                
+                        },{
+                            'http-equiv': 'X-UA-Compatible', content: 'IE=edge',
+                        },{
+                            name:'description',content : 'Qsun의 sns',
+                        },{
+                            name:'og:title', content:'Nodebird'
+                        },{
+                            name:'og:description', content : 'Qsun의 sns',
+                        },{
+                            property:'og:type', content:'website'
+                        }
+                    ]}
+                    link = {[
+                        {
+                            rel:'stylesheet', href:"https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.css"
+                        },{
+                            rel:'stylesheet', href:"https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+                        },{
+                            rel:'stylesheet', href:"https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+                        }
+                    ]}
+                />   
+                <Provider {...store}>                                     
                     <AppLayout>
                         <Component {...pageProps}/>
                     </AppLayout>

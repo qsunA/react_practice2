@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import { observer, inject, MobXProviderContext } from 'mobx-react';
+import Router  from 'next/router';
 
 const AppLayout = ({children})=>{
 
@@ -19,13 +20,21 @@ const AppLayout = ({children})=>{
     //     }
     // },[]);
 
+    const onSearch = (value) =>{
+        Router.push({pathname:'/hashtag',query:{tag:value}},`/hashtag/${value}`);
+    }
+
     return(
         <div>
             <Menu mode="horizontal">
                 <Menu.Item key="home"><Link href="/"><a>노드버드</a></Link></Menu.Item>
-                <Menu.Item key="profile"><Link href="/profile"><a>프로필</a></Link></Menu.Item>
+                <Menu.Item key="profile"><Link href="/profile" prefetch><a>프로필</a></Link></Menu.Item> 
                 <Menu.Item key="mail">
-                    <Input.Search enterButton style={{verticalAlign : 'middle'}}/>
+                    <Input.Search 
+                        enterButton 
+                        style={{verticalAlign : 'middle'}}
+                        onSearch={onSearch}
+                    />
                 </Menu.Item>
             </Menu>
             <Row  gutter={8}>

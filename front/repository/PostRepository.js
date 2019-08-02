@@ -65,6 +65,10 @@ class PostRepository{
             withCredentials:true,
         });
     }
+
+    loadPost(postId){
+        return axios.get(`/post/${postId}`)
+    }
 }
 
 export default new PostRepository();
