@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext, useRef } from 'react';
+import React, { useCallback, useState, useContext, useRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import { observer, MobXProviderContext } from 'mobx-react';
 
@@ -6,7 +6,12 @@ const PostForm =()=>{
   const {postStore} = useContext(MobXProviderContext);
   const [text,setText] = useState('');
   const imageInput = useRef();
-  const {imgPaths} = postStore;
+  const {imgPaths,postAdded} = postStore;
+
+  useEffect(()=>{
+    setText('');
+  },[postAdded === true]);
+
   const onSubmitForm = useCallback((e)=>{
     e.preventDefault();
     if(!text||!text.trim()){

@@ -28,7 +28,7 @@ const Home = () => {
       }
     }
   },[hasMorePost,postList.length]);
- 
+  console.log(`***post 업뎃 문제 있는듯 ${postList.length}`)
    return (
     <div>
       {user?<div>로그인 했습니다. </div>:<div>로그아웃했습니다.</div>}

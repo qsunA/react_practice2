@@ -24,40 +24,15 @@ class PostStore extends BaseStore{
         return this.postList.values();
     }
 
-    // constructor(root){
-    //     this.root = root;
-    //     this.postList.clear();
-    //     this.postList = [
-    //         {img:"https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
-    //         content:"첫번째 게시글 #안녕",
-    //         Comments : [], id:1,
-    //         User : {id:1, nickname:'귤귤'}},
-    //         {img:"https://i.pinimg.com/originals/b5/32/8b/b5328badff604de88cd397df700d1c3a.jpg",
-    //         content:"두번째 게시글 #tag #좋아요",
-    //         Comments : [], id:2,
-    //         User : {id:2, nickname:'Ruby'}}
-    //     ];
-    // }
-
-    // @action createPost(post){
-    //     try{
-    //         const me = this;
-    //         axios.post('/post',post,{
-    //             withCredentials:true
-    //         }).then(res=>{
-    //             me.postList = [res.data, ...me.postList];
-    //             me.imgPaths = [];
-    //         });
-    //     }catch(e){
-    //         console.error(e);
-    //     }        
-    // }
-
     @asyncAction 
     async *createPost(post){
+        this.postAdded = false;
         const {data,status} = yield postRepository.createPost(post);
-        this.imgPaths = [];
-        this.loadMainPosts();
+        if(status ===200){
+            this.imgPaths = [];
+            this.loadMainPosts();
+            this.postAdded = true
+        }        
     }
 
     @asyncAction
@@ -81,15 +56,12 @@ class PostStore extends BaseStore{
     }
 
     @asyncAction
-    async *loadMainPosts(lastId){
+    async *loadMainPosts(lastId=0 ){
+        var me = this;
         this.postList = lastId ===0?[]:this.postList;
         this.hasMorePost = lastId ? this.hasMorePost : true;
-        console.log(`********* lastId확인하기 ${lastId} ::: ${this.postList.length}`)
         
         const {data,status} = yield  postRepository.loadMainPosts(lastId);
-        // data.forEach((val)=>{
-        //     this.postList.push(data);
-        // });
         this.postList = [...this.postList, ...data];
         this.hasMorePost = data.length ===10;
     }
@@ -101,53 +73,28 @@ class PostStore extends BaseStore{
         var me = this;
     }
 
-    // @action loadUserPosts(id){
-    //     try{
-    //         var me = this;
-    //         console.log(`test`);
-    //         axios.get(`/user/${id}/posts`).then(res=>{
-    //             me.postList = res.data;
-    //         });
-    //     }catch(e){
-    //         log.error(e);            
-    //     }
-    // }
-
     @asyncAction 
     async *loadHashtagMainPosts(tag){
         const {data,status} = yield postRepository.loadHashtagMainPosts(tag);
         this.postList = data;
     }
 
-    // @action loadHashtagMainPosts(tag){
-    //     console.log(`loadHashtag 테스트`)
-    //     try{
-    //         var me = this;
-    //         axios.get(`/hashtag/${tag}`).then(res=>{
-    //             me.postList = res.data;
-    //         });
-    //     }catch(e){
-    //         log.error(e);
-    //     }
-    // }
-
-    // @action loadComments(postId){
-    //     try{
-    //         var me = this;
-    //         axios.get(`/post/${postId}/comments`).then(res=>{
-    //             me.comments = res.data;
-    //             me.postId = postId;
-    //         });
-    //     }catch(e){
-    //         log.error(e);
-    //     }
-    // }
-
     @asyncAction
     async *loadComments(postId){
+        var me = this;
+        
         const {data,status} = yield postRepository.loadComments(postId);
         this.comments = data;
         this.postId = postId;
+
+        const post = this.postList.find(v=>v.id===postId);
+        const idx = this.postList.indexOf(post);
+        const Comments = [...this.comments,...post.Comments];
+        const mainPosts = [...this.postList];
+        mainPosts[idx] = {...post,Comments};
+        this.postList = mainPosts;
+
+        console.log(`댓글 확인`)
     }
 
     @asyncAction 
