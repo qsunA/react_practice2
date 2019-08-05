@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, computed } from "mobx";
 import axios from 'axios';
 import {asyncAction} from "mobx-utils";
 import userRepository from "../repository/UserRepository";
@@ -18,6 +18,8 @@ class UserStore extends BaseStore{
     @observable followingList = []; // 팔로잉 리스트 
     @observable followerList = []; // 팔로워 리스트 
     @observable userInfo = null // 남의 정보
+    @observable followingCount = 0;
+    @observable followerCount = 0;
 
     @asyncAction
     async *login(usere){
@@ -45,7 +47,8 @@ class UserStore extends BaseStore{
             const {data,status} = yield userRepository.loadUser();
             var me = this;
             me.user = data;
-            console.log(`***_app.js  :: user확인 333:::: ${me.user}`);
+            me.followingCount = me.user.Followings.length;
+            me.followerCount = me.user.Followers.length;
         }catch(e){
             //console.error(e);
         }
@@ -69,25 +72,28 @@ class UserStore extends BaseStore{
         yield this.loadUser();
     }   
 
-    @asyncAction *loadFollowings(userId, offset, limit){
+    @asyncAction *loadFollowings(userId, offset=0, limit){
+        const me = this;
+        me.followingList = offset===0 ? []:me.followingList;
         const {data,status} = yield userRepository.loadFollowings(userId,offset,limit);
-        this.followingList.push(...data);
+        me.followingList.push(...data);
     }
 
-    @asyncAction *loadFollowers(userId, offset, limit){
-        
+    @asyncAction *loadFollowers(userId, offset=0, limit){
+        const me = this;
+        me.followerList = offset===0 ? []:me.followerList;
         const {data,status} = yield userRepository.loadFollowers(userId,offset,limit);
-        this.followerList = data;
+        me.followerList.push(...data);
     }
 
     @asyncAction *removeFollower(userId){
         const {data,status} = yield userRepository.removeFollower(userId);
-        this.loadFollowers(this.user.id);
+        this.followerList = this.followerList.filter(v=>v.id!==data);
     }
 
     @asyncAction *removeFollowing(userId){
         const {data,status} = yield userRepository.removeFollow(userId);
-        this.loadFollowings(this.user.id);
+        this.followingList = this.followingList.filter(v=>v.id!==data);
     }
 
     @asyncAction *updateNickName(userNickName){

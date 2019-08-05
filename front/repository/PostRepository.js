@@ -12,6 +12,12 @@ class PostRepository{
         });
     }
 
+    updatePost(post,postId){
+        return axios.patch(`/post`,post,{
+            withCredentials:true
+        });
+    }
+
     removePost(postId){
         return axios.delete(`/post/${postId}`,{
             withCredentials:true
@@ -34,8 +40,8 @@ class PostRepository{
         return  axios.get(`/user/${id}/posts`);
     }
 
-    loadHashtagMainPosts(tag){
-        return axios.get(`/hashtag/${encodeURIComponent(tag)}`);
+    loadHashtagMainPosts(tag, lastId, limit=10){
+        return axios.get(`/hashtag/${encodeURIComponent(tag)}?lastId=${lastId}&limit=${limit}`);
     }
 
     loadComments(postId){

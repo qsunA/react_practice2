@@ -188,7 +188,7 @@ router.get('/:id/followings',isLoggedIn,async(req,res,next)=>{
             where:{id:req.params.id}
         });
         const followings= await user.getFollowings({
-            attributes:['id','nickname',[user.sequelize.fn('count','*'),'total']],
+            attributes:['id','nickname'],
             limit:parseInt(req.query.limit, 10),
             offset:parseInt(req.query.offset, 10),
         });
@@ -205,7 +205,7 @@ router.get('/:id/followers',isLoggedIn,async(req,res,next)=>{
             where:{id:req.params.id}
         });
         const followers = await user.getFollowers({
-            attributes:['id','nickname',[user.sequelize.fn('count','*'),'total']],
+            attributes:['id','nickname'],
             limit:parseInt(req.query.limit, 10),
             offset:parseInt(req.query.offset, 10),
         });
@@ -231,7 +231,6 @@ router.delete('/:id/followers',isLoggedIn,async(req,res,next)=>{
 
 router.patch(`/nickname`,isLoggedIn,async(req,res,next)=>{
     try{
-        console.log(`nickname edit ${req.body.userNickName} :: ${req.user.id}`)
         await db.User.update({
             nickname:req.body.userNickName
         },{

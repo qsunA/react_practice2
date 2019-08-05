@@ -1,14 +1,32 @@
 import PropTypes from 'prop-types';
 import PostCard from '../components/PostCard';
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useCallback, useRef } from 'react';
 import { MobXProviderContext, observer } from 'mobx-react';
 
 const Hashtag = ({tag})=>{
     const {postStore}= useContext(MobXProviderContext);
-    const {postList} = postStore;
-    // useEffect(()=>{        
-    //     postStore.loadHashtagMainPosts(tag);
-    // },[tag]);
+    const {postList,hasMorePost} = postStore;
+    const countRef = useRef([]);
+    
+    useEffect(() => {
+        window.addEventListener('scroll',onScroll);
+         return () => {
+          window.removeEventListener('scroll',onScroll)  
+         };
+       }, [postList.length]);
+
+    const onScroll = useCallback(()=>{
+        if(window.scrollY + document.documentElement.clientHeight>document.documentElement.scrollHeight -100){
+            if(hasMorePost){
+                const lastId = postList[postList.length-1].id;
+                if(!countRef.current.includes(lastId)){
+                    postStore.loadHashtagMainPosts(tag,lastId);
+                }
+                countRef.current.push(lastId);
+            }
+        }
+    },[hasMorePost,postList.length]);
+
     return(
         <div>
             {postList.map((c,idx)=>(

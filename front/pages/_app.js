@@ -21,6 +21,7 @@ class NodeBird extends App{
         let pageProps = {};
         const user = ctx.store.userStore.user;
         const cookie = isServer? ctx.req.headers.cookie:'';
+        axios.defaults.headers.Cookie = ''; //초기화 해주는 부분이 없으면 이전 사용자 정보를 가지고 있는 경우가 있음 
         if(isServer && cookie){
             axios.defaults.headers.Cookie = cookie; // ssr을 위해서 쿠키를 넣어준
         }

@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { MobXProviderContext, observer } from 'mobx-react';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
+import PostForm from './PostForm';
+import PostEditForm from './PostEditForm';
 
 const PostCard = ({post})=>{
     const {userStore,postStore} = useContext(MobXProviderContext);
@@ -13,6 +15,7 @@ const PostCard = ({post})=>{
     const {user} = userStore;
     const {commentAdded,isAddingComment} = postStore;
     const liked = user && post.Likers && post.Likers.find(v=>v.id===user.id);
+    const [postEditFlag,setPostEditFlag] = useState(false);
 
 
     const onToggleComment = useCallback(()=>{
@@ -69,13 +72,20 @@ const PostCard = ({post})=>{
         postStore.removePost(postId);
     },[]);
 
+    const onClickEdit = useCallback((postId)=>()=>{
+        setPostEditFlag(prev=>!prev);
+    },[post && post.id]);
+
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
 
+    console.log(`********postEdit ${postEditFlag}`)
+
     return(
         
         <div>
+            {postEditFlag? <PostEditForm post={post}/> : 
         <Card
             key={+post.createAt}
             title={post.RetweetId?`${post.User.nickname}님이 리트윗하셨습니다.`:null}
@@ -90,7 +100,7 @@ const PostCard = ({post})=>{
                     <Button.Group>
                         {user && post.UserId === user.id ?(
                             <>
-                                <Button>수정</Button>
+                                <Button onClick={onClickEdit(post.id)}>수정</Button>
                                 <Button type="danger" onClick={onClickRemovePost(post.id)}>삭제</Button>
                             </>
                             )
@@ -129,6 +139,8 @@ const PostCard = ({post})=>{
             }
             
       </Card>
+            }
+
       {
           commentFormOpened &&
           <>

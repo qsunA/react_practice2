@@ -18,9 +18,9 @@ class PostStore extends BaseStore{
     @observable hasMorePost = true;
     @observable numberRequest=0;
     @observable post = null;
+    @observable postEditFlag = false;
 
     @computed get posts() {
-        console.log(posts);
         return this.postList.values();
     }
 
@@ -36,6 +36,11 @@ class PostStore extends BaseStore{
     }
 
     @asyncAction
+    async  *updatePost(post,postId){
+        const {data,status} = yield postRepository.updatePost(post);
+    }
+
+    @asyncAction
     async *removePost(postId){
         const {data,status} = yield postRepository.removePost(postId);
         this.loadMainPosts();
@@ -43,8 +48,13 @@ class PostStore extends BaseStore{
 
     @asyncAction 
     async *createComment(comment){
+        this.commentAdded = false;
         const {data,status} = yield postRepository.createComment(comment);
-        
+        if(status ===200){
+            const postIdx = this.postList.findIndex(v=>v.id===data.PostId);
+            this.postList[postIdx].Comments.push(data);
+            this.commentAdded = true;
+        }        
     }
 
     @action updateComment(comment){
@@ -74,9 +84,12 @@ class PostStore extends BaseStore{
     }
 
     @asyncAction 
-    async *loadHashtagMainPosts(tag){
-        const {data,status} = yield postRepository.loadHashtagMainPosts(tag);
-        this.postList = data;
+    async *loadHashtagMainPosts(tag, lastId =0){
+        this.postList = lastId ===0?[]:this.postList;
+        this.hasMorePost = lastId ? this.hasMorePost : true;
+        const {data,status} = yield postRepository.loadHashtagMainPosts(tag, lastId);
+        this.postList = [...this.postList, ...data];
+        this.hasMorePost = data.length ===10;
     }
 
     @asyncAction
@@ -89,12 +102,10 @@ class PostStore extends BaseStore{
 
         const post = this.postList.find(v=>v.id===postId);
         const idx = this.postList.indexOf(post);
-        const Comments = [...this.comments,...post.Comments];
+        const Comments = post.Comments ? [...this.comments,...post.Comments]: this.comments;
         const mainPosts = [...this.postList];
         mainPosts[idx] = {...post,Comments};
         this.postList = mainPosts;
-
-        console.log(`댓글 확인`)
     }
 
     @asyncAction 
@@ -143,43 +154,7 @@ class PostStore extends BaseStore{
         const {data,status} = yield postRepository.loadPost(postId);
         this.post = data;
     }
-
-    // @action addLike(postId){
-    //     const me = this;
-    //     axios.post(`/post/${postId}/like`,{},{
-    //         withCredentials:true
-    //     }).then(res=>{
-    //         const postIdx = me.postList.findIndex(v=>v.id===postId);
-    //         const post = me.postList[postIdx];
-    //         const Likers = [{id:res.data.userId}, ...post.Likers];
-    //         const mainPosts = [...me.postList];
-    //         mainPosts[postIdx] = {...post,Likers};
-    //         me.postList = mainPosts;
-    //     });
-    // }
-
-    // @action removeLike(postId){
-    //     const me = this;
-    //     axios.delete(`/post/${postId}/like`,{
-    //         withCredentials:true
-    //     }).then(res=>{
-    //         const postIdx = me.postList.findIndex(v=>v.id===postId);
-    //         const post = me.postList[postIdx];
-    //         const Likers= post.Likers.filter(v=>v.id!==res.data.userId);
-    //         const mainPosts = [...me.postList];
-    //         mainPosts[postIdx] = {...post, Likers};
-    //         me.postList = mainPosts;
-    //     });
-    // }
-
-    // @action addRetweet(postId){
-    //     const me = this;
-    //     axios.post(`/post/${postId}/retweet`,{},{
-    //         withCredentials:true,
-    //     }).then(res=>{
-    //         me.postList = [res.data, ...me.postList];
-    //     })
-    // }
+  
 }
 
 export const getPostStore = getOrCreateStore('postStore',PostStore);

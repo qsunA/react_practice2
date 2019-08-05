@@ -5,14 +5,7 @@ import { MobXProviderContext, observer } from 'mobx-react';
 
 const  Profile= () =>{
     const {userStore}= useContext(MobXProviderContext);
-    const {user,followingList,followerList} =userStore;
-
-    // useEffect(()=>{
-    //     if(user){
-    //         userStore.loadFollowings(user.id);
-    //         userStore.loadFollowers(user.id);
-    //     }
-    // },[user && user.id]);
+    const {user,followingList,followerList,followingCount,followerCount} =userStore;
 
     const onClickUnFollower = useCallback((userId)=>()=>{
         userStore.removeFollower(userId);
@@ -29,8 +22,6 @@ const  Profile= () =>{
     const onClickLoadMoreFollowings = useCallback(()=>{
         userStore.loadFollowings(user.id,followingList.length);
     },[user && user.id]);
-
-    console.log(`profile확인 *** ${followingList.length}`);
     
     return (
         <div>
@@ -40,7 +31,7 @@ const  Profile= () =>{
                 grid={{gutter:4, xs:2, md:3}}
                 size="small"
                 header={<div>팔로워 목록</div>}
-                loadMore={<Button style={{width:'100%'}} onClick={onClickLoadMoreFollowers}>더 보기</Button>}
+                loadMore={(followerCount> followerList.length)&& <Button style={{width:'100%'}} onClick={onClickLoadMoreFollowers} >더 보기</Button>}
                 bordered
                 dataSource={followerList}
                 renderItem = {item=>(
@@ -54,7 +45,7 @@ const  Profile= () =>{
                 grid={{gutter:4, xs:2, md:3}}
                 size="small"
                 header={<div>팔로잉 목록</div>}
-                loadMore={<Button style={{width:'100%'}} onClick={onClickLoadMoreFollowings}>더 보기</Button>}
+                loadMore={(followingCount > followingList.length) && <Button style={{width:'100%'}} onClick={onClickLoadMoreFollowings}>더 보기</Button>}
                 bordered
                 dataSource={followingList}
                 renderItem = {item=>(
@@ -70,7 +61,7 @@ const  Profile= () =>{
 Profile.getInitialProps=async(context)=>{
     const {user} = context.store.userStore;
     await context.store.userStore.loadFollowings(user.id);
-    await context.store.userStore.loadFollowers(user.id);
+    await context.store.userStore.loadFollowers(user.id);    
 }
 
 export default observer(Profile);

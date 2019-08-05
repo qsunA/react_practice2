@@ -1,6 +1,7 @@
 import React, { useContext, useCallback } from 'react';
 import { Card, Avatar, Button } from 'antd';
 import { MobXProviderContext, observer } from 'mobx-react';
+import Link from 'next/link';
 
 const UserProfile = ()=>{
 
@@ -14,9 +15,9 @@ const UserProfile = ()=>{
         <div>
             {user&& <Card
             actions={[
-                <div key="twit">짹짹<br/>{user.Posts.length}</div>,
-                <div key="following">팔로잉<br/>{user.Followings.length}</div>,
-                <div key="follower">팔로워<br/>{user.Followers.length}</div>,
+                <Link key="twit" href="/profile"><a><div>짹짹<br/>{user.Posts.length}</div></a></Link>,
+                <Link href="/profile" key="following"><a><div>팔로잉<br/>{user.Followings.length}</div></a></Link>,
+                <Link href="/profile" key="follower"><a><div>팔로워<br/>{user.Followers.length}</div></a></Link>
             ]}
         >
             <Card.Meta

@@ -53,6 +53,7 @@ router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /
             where:{id:newPost.id},
             include:[{
                 model:db.User,
+                attributes:['id','nickname']
             },{
                 model: db.Image,
             }],
@@ -63,6 +64,41 @@ router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /
         next(e);
     }
 });
+
+router.patch('/',isLoggedIn,upload.none(),async(req,res,next)=>{
+    try{
+        const hashtags = req.body.content.match(/#[^\s]+/g);
+        const editPost = db.Post.update({
+            content:req.body.content,    
+        },{
+            where:{id:req.body.postId}
+        });
+        
+        if(hashtags){
+            const result = await Promise.all(hashtags.map(tag=>db.Hashtag.findOrCreate({
+                where:{
+                    name:tag.slice(1).toLowerCase()
+                },
+            })));
+           // console.log(`************************ ******editPost ::; ${result[0]}`)
+            //await editPost.addHashtags(result.map(r=>r[0]));
+        }
+
+        const fullPost = await db.Post.findOne({
+            where:{id:editPost.id},
+            include:[{
+                model:db.User,
+                attributes:['id','nickname']
+            },{
+                model: db.Image,
+            }],
+        });
+        res.json(fullPost);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
 
 
 router.post('/images',upload.array('image'), (req, res) => {//이미지 업로드
@@ -223,7 +259,6 @@ router.get('/:id',async(req,res,next)=>{
                 model:db.Image,
             }]
         });
-        console.log(`***** post확인하기 ${post}`)
         res.json(post);
     }catch(e){
         console.error(e);
