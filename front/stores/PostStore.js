@@ -38,6 +38,8 @@ class PostStore extends BaseStore{
     @asyncAction
     async  *updatePost(post,postId){
         const {data,status} = yield postRepository.updatePost(post);
+        if(status ===200){
+        }
     }
 
     @asyncAction

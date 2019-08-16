@@ -58,9 +58,7 @@ const PostCard = ({post})=>{
         postStore.addRetweet(post.id);
     },[user&&user.id,post&& post.id]);
 
-    const onClickFollowing = useCallback((userId) =>()=> {
-        console.log(`follow test확인`);
-        
+    const onClickFollowing = useCallback((userId) =>()=> {        
         userStore.addFollow(userId);
     },[]);
 
@@ -73,8 +71,9 @@ const PostCard = ({post})=>{
     },[]);
 
     const onClickEdit = useCallback((postId)=>()=>{
+        console.log(`onClickEdit ${postId} ${postEditFlag}`)
         setPostEditFlag(prev=>!prev);
-    },[post && post.id]);
+    },[post&& post.id]);
 
     useEffect(()=>{
         setCommentText('');
@@ -85,7 +84,7 @@ const PostCard = ({post})=>{
     return(
         
         <div>
-            {postEditFlag? <PostEditForm post={post}/> : 
+            {postEditFlag? <PostEditForm post={post} clickEvent={onClickEdit}/> : 
         <Card
             key={+post.createAt}
             title={post.RetweetId?`${post.User.nickname}님이 리트윗하셨습니다.`:null}

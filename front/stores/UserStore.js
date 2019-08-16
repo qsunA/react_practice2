@@ -26,6 +26,8 @@ class UserStore extends BaseStore{
         const {data, status} = yield userRepository.login(usere);
         // isLoggingIn/ isLoggedIn 
         this.user = data;        
+        this.followingCount = this.user.Followings.length;
+        this.followerCount = this.user.Followers.length;
     }
 
     @asyncAction

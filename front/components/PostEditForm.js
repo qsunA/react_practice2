@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext } from 'react';
 import { observer, MobXProviderContext } from 'mobx-react';
 import { Form, Input, Button, Card } from 'antd';
 
-const PostEditForm = ({post})=>{
+const PostEditForm = ({post,clickEvent})=>{
     const {postStore} = useContext(MobXProviderContext);
     const [editText, setEditText] = useState(post.content);
 
@@ -19,6 +19,8 @@ const PostEditForm = ({post})=>{
         formData.append('content',editText);
         formData.append('postId',post.id);
         postStore.updatePost(formData);
+        console.log(`clickEventclickEventclickEventclickEvent** `)
+        clickEvent(post.id);
     },[editText]);
 
 

@@ -48,7 +48,8 @@ router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /
                 await newPost.addImage(image);
             }
         }
-
+        console.log(`newPost ${newPost}`)
+        console.log(`newPost.id ${newPost.id}`)
         const fullPost = await db.Post.findOne({
             where:{id:newPost.id},
             include:[{
@@ -68,12 +69,16 @@ router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /
 router.patch('/',isLoggedIn,upload.none(),async(req,res,next)=>{
     try{
         const hashtags = req.body.content.match(/#[^\s]+/g);
-        const editPost = db.Post.update({
+        console.log(`hashtag ${hashtags}`)
+        console.log(`id ${req.body.postId}`)
+        await db.Post.update({
             content:req.body.content,    
         },{
             where:{id:req.body.postId}
         });
-        
+
+        const editPost =  await db.Post.findOne({where:{id:req.body.postId}});
+        console.log(`editPost ${editPost}`)
         if(hashtags){
             const result = await Promise.all(hashtags.map(tag=>db.Hashtag.findOrCreate({
                 where:{
@@ -81,11 +86,11 @@ router.patch('/',isLoggedIn,upload.none(),async(req,res,next)=>{
                 },
             })));
            // console.log(`************************ ******editPost ::; ${result[0]}`)
-            //await editPost.addHashtags(result.map(r=>r[0]));
+            await editPost.addHashtags(result.map(r=>r[0]));
         }
-
+        console.log(`editPost.id ${editPost.id}`)
         const fullPost = await db.Post.findOne({
-            where:{id:editPost.id},
+            where:{id:req.body.postId},
             include:[{
                 model:db.User,
                 attributes:['id','nickname']

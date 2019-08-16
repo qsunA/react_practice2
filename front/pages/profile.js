@@ -22,6 +22,8 @@ const  Profile= () =>{
     const onClickLoadMoreFollowings = useCallback(()=>{
         userStore.loadFollowings(user.id,followingList.length);
     },[user && user.id]);
+
+    console.log(`test`)
     
     return (
         <div>
