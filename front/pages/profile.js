@@ -1,17 +1,11 @@
-import React, { useEffect, useCallback } from 'react';
-import { Form, Input, Button, List, Card, Icon } from 'antd';
+import React, { useCallback, useContext } from 'react';
+import { Button, List, Card, Icon } from 'antd';
 import NicknameEditForm from '../components/NicknameEditForm';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
-const  Profile= ({userStore}) =>{
-    const {user,followingList,followerList} =userStore;
-
-    useEffect(()=>{
-        if(user){
-            userStore.loadFollowings(user.id);
-            userStore.loadFollowers(user.id);
-        }
-    },[user && user.id]);
+const  Profile= () =>{
+    const {userStore}= useContext(MobXProviderContext);
+    const {user,followingList,followerList,followingCount,followerCount} =userStore;
 
     const onClickUnFollower = useCallback((userId)=>()=>{
         userStore.removeFollower(userId);
@@ -20,6 +14,16 @@ const  Profile= ({userStore}) =>{
     const onClickUnFollowing = useCallback((userId)=>()=>{
         userStore.removeFollowing(userId);
     },[]);
+
+    const onClickLoadMoreFollowers = useCallback(()=>{
+        userStore.loadFollowers(user.id,followerList.length);
+    },[user && user.id]);
+
+    const onClickLoadMoreFollowings = useCallback(()=>{
+        userStore.loadFollowings(user.id,followingList.length);
+    },[user && user.id]);
+
+    console.log(`test`)
     
     return (
         <div>
@@ -29,7 +33,7 @@ const  Profile= ({userStore}) =>{
                 grid={{gutter:4, xs:2, md:3}}
                 size="small"
                 header={<div>팔로워 목록</div>}
-                loadMore={<Button style={{width:'100%'}}>더 보기</Button>}
+                loadMore={(followerCount> followerList.length)&& <Button style={{width:'100%'}} onClick={onClickLoadMoreFollowers} >더 보기</Button>}
                 bordered
                 dataSource={followerList}
                 renderItem = {item=>(
@@ -43,7 +47,7 @@ const  Profile= ({userStore}) =>{
                 grid={{gutter:4, xs:2, md:3}}
                 size="small"
                 header={<div>팔로잉 목록</div>}
-                loadMore={<Button style={{width:'100%'}}>더 보기</Button>}
+                loadMore={(followingCount > followingList.length) && <Button style={{width:'100%'}} onClick={onClickLoadMoreFollowings}>더 보기</Button>}
                 bordered
                 dataSource={followingList}
                 renderItem = {item=>(
@@ -56,6 +60,10 @@ const  Profile= ({userStore}) =>{
     );     
 };
 
-export default inject(({store})=>({
-    userStore:store.userStore
-}))(observer(Profile));
+Profile.getInitialProps=async(context)=>{
+    const {user} = context.store.userStore;
+    await context.store.userStore.loadFollowings(user.id);
+    await context.store.userStore.loadFollowers(user.id);    
+}
+
+export default observer(Profile);

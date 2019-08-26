@@ -22,7 +22,6 @@ const upload = multer({
 
 router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /api/post
     try{
-        console.log(`createPost222확인해보기 ${req.body.content}`)
         const hashtags = req.body.content.match(/#[^\s]+/g); // 정규표현식으로 해시태그 뽑아냄
         const newPost = await db.Post.create({
             content:req.body.content,
@@ -49,11 +48,13 @@ router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /
                 await newPost.addImage(image);
             }
         }
-
+        console.log(`newPost ${newPost}`)
+        console.log(`newPost.id ${newPost.id}`)
         const fullPost = await db.Post.findOne({
             where:{id:newPost.id},
             include:[{
                 model:db.User,
+                attributes:['id','nickname']
             },{
                 model: db.Image,
             }],
@@ -64,6 +65,45 @@ router.post('/', isLoggedIn,upload.none(), async (req, res, next) => { // POST /
         next(e);
     }
 });
+
+router.patch('/',isLoggedIn,upload.none(),async(req,res,next)=>{
+    try{
+        const hashtags = req.body.content.match(/#[^\s]+/g);
+        console.log(`hashtag ${hashtags}`)
+        console.log(`id ${req.body.postId}`)
+        await db.Post.update({
+            content:req.body.content,    
+        },{
+            where:{id:req.body.postId}
+        });
+
+        const editPost =  await db.Post.findOne({where:{id:req.body.postId}});
+        console.log(`editPost ${editPost}`)
+        if(hashtags){
+            const result = await Promise.all(hashtags.map(tag=>db.Hashtag.findOrCreate({
+                where:{
+                    name:tag.slice(1).toLowerCase()
+                },
+            })));
+           // console.log(`************************ ******editPost ::; ${result[0]}`)
+            await editPost.addHashtags(result.map(r=>r[0]));
+        }
+        console.log(`editPost.id ${editPost.id}`)
+        const fullPost = await db.Post.findOne({
+            where:{id:req.body.postId},
+            include:[{
+                model:db.User,
+                attributes:['id','nickname']
+            },{
+                model: db.Image,
+            }],
+        });
+        res.json(fullPost);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+})
 
 
 router.post('/images',upload.array('image'), (req, res) => {//이미지 업로드
@@ -197,6 +237,38 @@ router.post('/:id/retweet',isLoggedIn,async(req,res,next)=>{
         console.error(e);
         next(e);
     }
-})
+});
+
+router.delete('/:id',isLoggedIn,async(req,res,next)=>{
+    try{
+        const post = await db.Post.findOne({where:{id:req.params.id}});
+        if(!post){
+            return res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+        await db.Post.destroy({where : {id:req.params.id}});
+        res.send(req.params.id);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
+
+router.get('/:id',async(req,res,next)=>{
+    try{
+        const post = await db.Post.findOne({
+            where:{id:req.params.id},
+            include:[{
+                model:db.User,
+                attributes:['id','nickname'],
+            },{
+                model:db.Image,
+            }]
+        });
+        res.json(post);
+    }catch(e){
+        console.error(e);
+        next(e);
+    }
+});
 
 module.exports = router;

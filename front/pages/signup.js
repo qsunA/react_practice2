@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Form, Input, Checkbox, Button } from 'antd';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 
 export const useInput = (initValue = null) =>{
     const [value, setter] = useState(initValue);
@@ -12,7 +12,9 @@ export const useInput = (initValue = null) =>{
     return [value, handler];
 }
 
-const  Signup= ({userStore}) =>{
+const  Signup= () =>{
+    const {userStore}= useContext(MobXProviderContext);
+    const {user} = userStore;
     const [id,setId] = useState('');
     const [nick,setNick] = useState('');
     const [password,setPassword] = useState('');
@@ -67,6 +69,10 @@ const  Signup= ({userStore}) =>{
         setTerm(e.target.checked);
     },[]);
     
+    if(user){
+        return null;
+    }
+
     return (
         <>
             <Form onSubmit={onSubmit} style={{padding:10}}>
@@ -103,6 +109,4 @@ const  Signup= ({userStore}) =>{
     );     
 };
 
-export default inject(({store})=>({
-    userStore : store.userStore
-}))(observer(Signup));
+export default observer(Signup);

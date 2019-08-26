@@ -1,7 +1,10 @@
-import {observable, computed, action} from 'mobx';
+import {observable, computed, action, when} from 'mobx';
 import axios from 'axios';
+import { BaseStore, getOrCreateStore } from 'next-mobx-wrapper';
+import { asyncAction } from 'mobx-utils';
+import postRepository from '../repository/PostRepository';
 
-export default class PostStore{
+class PostStore extends BaseStore{
     @observable postList = [];
     @observable imgPaths = [];
     @observable addPostErrorReason = ''; //포스트 업로드 실패 사유
@@ -12,59 +15,48 @@ export default class PostStore{
     @observable commentAdded = false; 
     @observable comments = [];
     @observable postId = null;
+    @observable hasMorePost = true;
+    @observable numberRequest=0;
+    @observable post = null;
+    @observable postEditFlag = false;
 
     @computed get posts() {
-        console.log(posts);
         return this.postList.values();
     }
 
-    constructor(root){
-        this.root = root;
-        this.postList.clear();
-        this.postList = [
-            {img:"https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
-            content:"첫번째 게시글 #안녕",
-            Comments : [], id:1,
-            User : {id:1, nickname:'귤귤'}},
-            {img:"https://i.pinimg.com/originals/b5/32/8b/b5328badff604de88cd397df700d1c3a.jpg",
-            content:"두번째 게시글 #tag #좋아요",
-            Comments : [], id:2,
-            User : {id:2, nickname:'Ruby'}}
-        ];
-    }
-
-    @action createPost(post){
-        try{
-            const me = this;
-            axios.post('/post',post,{
-                withCredentials:true
-            }).then(res=>{
-                me.postList = [res.data, ...me.postList];
-                me.imgPaths = [];
-            });
-        }catch(e){
-            console.error(e);
+    @asyncAction 
+    async *createPost(post){
+        this.postAdded = false;
+        const {data,status} = yield postRepository.createPost(post);
+        if(status ===200){
+            this.imgPaths = [];
+            this.loadMainPosts();
+            this.postAdded = true
         }        
     }
 
-    @action updatePost(post){
-
-    }
-
-    @action deletePost(post){
-
-    }
-
-    @action createComment(data){
-        try{
-            axios.post(`/post/${data.postId}/comment`,{
-                content:data.content
-            },{
-                withCredentials:true
-            });
-        }catch(e){
-            log.error(e);
+    @asyncAction
+    async  *updatePost(post,postId){
+        const {data,status} = yield postRepository.updatePost(post);
+        if(status ===200){
         }
+    }
+
+    @asyncAction
+    async *removePost(postId){
+        const {data,status} = yield postRepository.removePost(postId);
+        this.loadMainPosts();
+    }
+
+    @asyncAction 
+    async *createComment(comment){
+        this.commentAdded = false;
+        const {data,status} = yield postRepository.createComment(comment);
+        if(status ===200){
+            const postIdx = this.postList.findIndex(v=>v.id===data.PostId);
+            this.postList[postIdx].Comments.push(data);
+            this.commentAdded = true;
+        }        
     }
 
     @action updateComment(comment){
@@ -75,102 +67,96 @@ export default class PostStore{
 
     }
 
-    @action loadMainPosts(){
-        try{
-            var me = this;
-            axios.get('/posts').then(res=>{
-                me.postList = res.data;
-            }); 
-        }catch(e){
-            log.error(e);
-        }        
+    @asyncAction
+    async *loadMainPosts(lastId=0 ){
+        var me = this;
+        this.postList = lastId ===0?[]:this.postList;
+        this.hasMorePost = lastId ? this.hasMorePost : true;
+        
+        const {data,status} = yield  postRepository.loadMainPosts(lastId);
+        this.postList = [...this.postList, ...data];
+        this.hasMorePost = data.length ===10;
     }
 
-    @action loadUserPosts(id){
-        try{
-            var me = this;
-            console.log(`test`);
-            axios.get(`/user/${id}/posts`).then(res=>{
-                me.postList = res.data;
-            });
-        }catch(e){
-            log.error(e);
-            
-        }
+    @asyncAction 
+    async *loadUserPosts(id){
+        const {data, status} = yield postRepository.loadUserPosts(id);
+        this.postList = data;
+        var me = this;
     }
 
-    @action loadHashtagMainPosts(tag){
-        console.log(`loadHashtag 테스트`)
-        try{
-            var me = this;
-            axios.get(`/hashtag/${tag}`).then(res=>{
-                me.postList = res.data;
-            });
-        }catch(e){
-            log.error(e);
-        }
+    @asyncAction 
+    async *loadHashtagMainPosts(tag, lastId =0){
+        this.postList = lastId ===0?[]:this.postList;
+        this.hasMorePost = lastId ? this.hasMorePost : true;
+        const {data,status} = yield postRepository.loadHashtagMainPosts(tag, lastId);
+        this.postList = [...this.postList, ...data];
+        this.hasMorePost = data.length ===10;
     }
 
-    @action loadComments(postId){
-        try{
-            var me = this;
-            axios.get(`/post/${postId}/comments`).then(res=>{
-                me.comments = res.data;
-                me.postId = postId;
-            });
-        }catch(e){
-            log.error(e);
-        }
+    @asyncAction
+    async *loadComments(postId){
+        var me = this;
+        
+        const {data,status} = yield postRepository.loadComments(postId);
+        this.comments = data;
+        this.postId = postId;
+
+        const post = this.postList.find(v=>v.id===postId);
+        const idx = this.postList.indexOf(post);
+        const Comments = post.Comments ? [...this.comments,...post.Comments]: this.comments;
+        const mainPosts = [...this.postList];
+        mainPosts[idx] = {...post,Comments};
+        this.postList = mainPosts;
     }
 
-    @action uploadImages(formData){
-        const me = this;
-        axios.post('/post/images',formData,{
-            withCredentials:true
-        }).then(res=>{
-            me.imgPaths = [...me.imgPaths, ...res.data];
-        });
+    @asyncAction 
+    async *uploadImages(formData){
+        const {data,status} = yield postRepository.uploadImages(formData);
+        this.imgPaths = [...data, ...this.imgPaths];
     }
-
+    
     @action removeImage(idx){
         const me = this;
         me.imgPaths= me.imgPaths.filter((v,i)=>i!==idx);
     }
 
-    @action addLike(postId){
+    @asyncAction
+    async *addLike(postId){
         const me = this;
-        axios.post(`/post/${postId}/like`,{},{
-            withCredentials:true
-        }).then(res=>{
-            const postIdx = me.postList.findIndex(v=>v.id===postId);
-            const post = me.postList[postIdx];
-            const Likers = [{id:res.data.userId}, ...post.Likers];
-            const mainPosts = [...me.postList];
-            mainPosts[postIdx] = {...post,Likers};
-            me.postList = mainPosts;
-        });
+        const {data,status} = yield postRepository.addLike(postId);
+        const postIdx = me.postList.findIndex(v=>v.id===postId);
+        const post = me.postList[postIdx];
+        const Likers = [{id: data.userId}, ...post.Likers];
+        const mainPosts = [...me.postList];
+        mainPosts[postIdx] = {...post,Likers};
+        me.postList = mainPosts;
     }
 
-    @action removeLike(postId){
+    @asyncAction
+    async *removeLike(postId){
         const me = this;
-        axios.delete(`/post/${postId}/like`,{
-            withCredentials:true
-        }).then(res=>{
-            const postIdx = me.postList.findIndex(v=>v.id===postId);
-            const post = me.postList[postIdx];
-            const Likers= post.Likers.filter(v=>v.id!==res.data.userId);
-            const mainPosts = [...me.postList];
-            mainPosts[postIdx] = {...post, Likers};
-            me.postList = mainPosts;
-        });
+        const {data,status} = yield postRepository.removeLike(postId);
+        const postIdx = me.postList.findIndex(v=>v.id===postId);
+        const post = me.postList[postIdx];
+        const Likers= post.Likers.filter(v=>v.id!==data.userId);
+        const mainPosts = [...me.postList];
+        mainPosts[postIdx] = {...post, Likers};
+        me.postList = mainPosts;
     }
 
-    @action addRetweet(postId){
-        const me = this;
-        axios.post(`/post/${postId}/retweet`,{},{
-            withCredentials:true,
-        }).then(res=>{
-            me.postList = [res.data, ...me.postList];
-        })
+    @asyncAction
+    async *addRetweet(postId){        
+        const {data,status} = yield postRepository.addRetweet(postId);
+        this.loadMainPosts();
     }
+
+    @asyncAction
+    async *loadPost(postId){
+        const {data,status} = yield postRepository.loadPost(postId);
+        this.post = data;
+    }
+  
 }
+
+export const getPostStore = getOrCreateStore('postStore',PostStore);

@@ -51,14 +51,14 @@ class UserRepository{
         });
     }
 
-    loadFollowings(userId){
-        return axios.get(`${this.URL}/${userId}/followings`,{
+    loadFollowings(userId,offset=0, limit=3){
+        return axios.get(`${this.URL}/${userId}/followings?offset=${offset}&limit=${limit}`,{
             withCredentials:true
         });
     }
 
-    loadFollowers(userId){
-        return axios.get(`${this.URL}/${userId}/followers`,{
+    loadFollowers(userId,offset=0, limit=3){
+        return axios.get(`${this.URL}/${userId}/followers?offset=${offset}&limit=${limit}`,{
             withCredentials:true
         });
     }

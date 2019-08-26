@@ -1,17 +1,21 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import {Button, Card, Icon, Avatar, Form, Input, List, Comment } from 'antd';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import {Button, Card, Icon, Avatar, Form, Input, List, Comment, Popover } from 'antd';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-import { inject, observer } from 'mobx-react';
+import { MobXProviderContext, observer } from 'mobx-react';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
+import PostForm from './PostForm';
+import PostEditForm from './PostEditForm';
 
-const PostCard = ({post,postStore, userStore})=>{
+const PostCard = ({post})=>{
+    const {userStore,postStore} = useContext(MobXProviderContext);
     const [commentFormOpened, setCommentFormOpened] = useState(false);
     const [commentText, setCommentText] = useState('');
     const {user} = userStore;
     const {commentAdded,isAddingComment} = postStore;
     const liked = user && post.Likers && post.Likers.find(v=>v.id===user.id);
+    const [postEditFlag,setPostEditFlag] = useState(false);
 
 
     const onToggleComment = useCallback(()=>{
@@ -54,24 +58,33 @@ const PostCard = ({post,postStore, userStore})=>{
         postStore.addRetweet(post.id);
     },[user&&user.id,post&& post.id]);
 
-    const onClickFollowing = useCallback((userId) =>()=> {
-        console.log(`follow test확인`);
-        
+    const onClickFollowing = useCallback((userId) =>()=> {        
         userStore.addFollow(userId);
     },[]);
 
-    const onClickUnFollowing = useCallback((userId) => ()=> {
-        
+    const onClickUnFollowing = useCallback((userId) => ()=> {        
         userStore.removeFollow(userId);   
     },[]);
+
+    const onClickRemovePost = useCallback((postId)=>()=>{
+        postStore.removePost(postId);
+    },[]);
+
+    const onClickEdit = useCallback((postId)=>()=>{
+        console.log(`onClickEdit ${postId} ${postEditFlag}`)
+        setPostEditFlag(prev=>!prev);
+    },[post&& post.id]);
 
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
 
+    console.log(`********postEdit ${postEditFlag}`)
+
     return(
         
         <div>
+            {postEditFlag? <PostEditForm post={post} clickEvent={onClickEdit}/> : 
         <Card
             key={+post.createAt}
             title={post.RetweetId?`${post.User.nickname}님이 리트윗하셨습니다.`:null}
@@ -80,7 +93,22 @@ const PostCard = ({post,postStore, userStore})=>{
             <Icon type="retweet" key="retweet" onClick={onClickRetweet}/>,
             <Icon type="heart" key="heart" theme={liked ? 'twoTone' :'outlined'} onClick={onToggleLike}/>,
             <Icon type="message" key="message" onClick={onToggleComment}/>,
-            <Icon type="ellipsis" key="ellipsis"/>,
+            <Popover 
+                key="ellipsis" 
+                content={(
+                    <Button.Group>
+                        {user && post.UserId === user.id ?(
+                            <>
+                                <Button onClick={onClickEdit(post.id)}>수정</Button>
+                                <Button type="danger" onClick={onClickRemovePost(post.id)}>삭제</Button>
+                            </>
+                            )
+                            :<Button>신고</Button>}
+                    </Button.Group>
+                )}
+            >
+                <Icon type="ellipsis" key="ellipsis"/>
+            </Popover>,
             ]}
             extra={!user||user.id === post.User.id ? null :
                 (
@@ -110,6 +138,8 @@ const PostCard = ({post,postStore, userStore})=>{
             }
             
       </Card>
+            }
+
       {
           commentFormOpened &&
           <>
@@ -149,7 +179,4 @@ PostCard.propTypes = {
     })
 }
 
-export default inject(({store})=>({
-    userStore : store.userStore,
-    postStore : store.postStore
-})) (observer(PostCard));
+export default observer(PostCard);
