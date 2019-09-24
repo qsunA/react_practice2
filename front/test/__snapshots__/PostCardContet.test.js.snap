@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<PostCardContent/> matches snapshot 1`] = `
+<PostCardContent
+  postData="hello #test"
+>
+  <div>
+    hello 
+    <Link
+      as="/hashtag/test"
+      href={
+        Object {
+          "pathname": "/hashtag",
+          "query": Object {
+            "tag": "test",
+          },
+        }
+      }
+      key="#test"
+      prefetch={true}
+    >
+      <a
+        href="/hashtag/test"
+        onClick={[Function]}
+        onMouseEnter={[Function]}
+      >
+        #test
+      </a>
+    </Link>
+  </div>
+</PostCardContent>
+`;

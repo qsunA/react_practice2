@@ -6,7 +6,7 @@ import { MobXProviderContext, observer } from 'mobx-react';
 
 const LoginForm=() =>{
     const {userStore}= useContext(MobXProviderContext);
-    const {user,isLoggingIn} = userStore;
+    const {isLoggingIn} = userStore;
     const [id,onChangeId] = useInput('');
     const [password,onChangePassword] = useInput('');
     const onSubmitForm = useCallback((e) =>{

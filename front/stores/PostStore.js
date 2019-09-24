@@ -37,8 +37,12 @@ class PostStore extends BaseStore{
 
     @asyncAction
     async  *updatePost(post,postId){
+        const me = this;
         const {data,status} = yield postRepository.updatePost(post);
         if(status ===200){
+            console.log(`postUpdate`)
+           const postIdx = me.postList.findIndex(v=>v.id === postId);
+           me.postList[postIdx] = data;
         }
     }
 

@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { MobXProviderContext, observer } from 'mobx-react';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
-import PostForm from './PostForm';
 import PostEditForm from './PostEditForm';
 
 const PostCard = ({post})=>{
@@ -70,21 +69,22 @@ const PostCard = ({post})=>{
         postStore.removePost(postId);
     },[]);
 
-    const onClickEdit = useCallback((postId)=>()=>{
-        console.log(`onClickEdit ${postId} ${postEditFlag}`)
+    const onClickEdit = useCallback(()=>()=>{
         setPostEditFlag(prev=>!prev);
-    },[post&& post.id]);
+    },[]);
+
+    const clickEditFormDone = ()=>{
+        setPostEditFlag(prev=>!prev);
+    };
 
     useEffect(()=>{
         setCommentText('');
     },[commentAdded === true]);
 
-    console.log(`********postEdit ${postEditFlag}`)
-
     return(
         
         <div>
-            {postEditFlag? <PostEditForm post={post} clickEvent={onClickEdit}/> : 
+            {postEditFlag? <PostEditForm post={post} clickEvent={clickEditFormDone}/> : 
         <Card
             key={+post.createAt}
             title={post.RetweetId?`${post.User.nickname}님이 리트윗하셨습니다.`:null}
